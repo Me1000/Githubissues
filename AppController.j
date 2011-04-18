@@ -45,6 +45,23 @@
     [mainContentView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("MainContentTexture.png", 164, 141)]];
 }
 
+
+// Main splitview delegates
+- (void)splitViewDidResizeSubviews:(CPSplitView)aSplitView
+{
+    // As the splitview resizes
+    // we need to reposition the tab view thingy at the top...
+}
+
+- (float)splitView:(CPSplitView)aSplitView constrainMinCoordinate:(float)proposedMin ofSubviewAt:(int)subviewIndex
+{
+    return 210;
+}
+
+- (float)splitView:(CPSplitView)aSplitView constrainMaxCoordinate:(float)proposedMin ofSubviewAt:(int)subviewIndex
+{
+    return 300;
+}
 @end
 
 

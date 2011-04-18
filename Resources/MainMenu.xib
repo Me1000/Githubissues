@@ -1222,7 +1222,7 @@
 																			<string key="NSFrameSize">{220, 290}</string>
 																			<reference key="NSSuperview" ref="48907036"/>
 																			<reference key="NSWindow"/>
-																			<reference key="NSNextKeyView" ref="532502529"/>
+																			<reference key="NSNextKeyView" ref="546674116"/>
 																		</object>
 																	</object>
 																	<string key="NSFrameSize">{220, 290}</string>
@@ -1269,7 +1269,7 @@
 															<string key="NSFrameSize">{220, 290}</string>
 															<reference key="NSSuperview" ref="451039138"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="546674116"/>
+															<reference key="NSNextKeyView" ref="48907036"/>
 															<int key="NSsFlags">528</int>
 															<reference key="NSVScroller" ref="532502529"/>
 															<reference key="NSHScroller" ref="546674116"/>
@@ -1388,7 +1388,7 @@
 																			<string key="NSFrameSize">{220, 129}</string>
 																			<reference key="NSSuperview" ref="775189175"/>
 																			<reference key="NSWindow"/>
-																			<reference key="NSNextKeyView" ref="84552787"/>
+																			<reference key="NSNextKeyView" ref="862710858"/>
 																		</object>
 																	</object>
 																	<string key="NSFrameSize">{220, 129}</string>
@@ -1427,7 +1427,7 @@
 															<string key="NSFrameSize">{220, 129}</string>
 															<reference key="NSSuperview" ref="513948500"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="862710858"/>
+															<reference key="NSNextKeyView" ref="775189175"/>
 															<int key="NSsFlags">528</int>
 															<reference key="NSVScroller" ref="84552787"/>
 															<reference key="NSHScroller" ref="862710858"/>
@@ -1674,7 +1674,6 @@
 									<string key="NSFrame">{{221, 0}, {579, 554}}</string>
 									<reference key="NSSuperview" ref="323643413"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 							</object>
@@ -2332,6 +2331,14 @@
 						<reference key="destination" ref="81781835"/>
 					</object>
 					<int key="connectionID">544</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="323643413"/>
+						<reference key="destination" ref="635946545"/>
+					</object>
+					<int key="connectionID">552</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -4109,7 +4116,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">551</int>
+			<int key="maxID">552</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
