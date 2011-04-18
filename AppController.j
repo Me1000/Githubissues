@@ -12,7 +12,7 @@
 @import "ISAccountView.j"
 @import "ISRepositoriesController.j"
 @import "ISSourceListDataView.j"
-
+@import "ISRepository.j"
 
 
 @implementation AppController : CPObject
@@ -74,7 +74,7 @@
 - (id)initWithFrame:(CGRect)aFrame
 {
     self = [super initWithFrame:aFrame];
-    
+
     if(self)
     {
         var scrollerColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
@@ -84,7 +84,7 @@
         ] isVertical:YES]];
 
         var bgColor = [CPColor clearColor];
-        
+
         [self setValue:scrollerColor forThemeAttribute:"knob-color"];
         [self setValue:bgColor forThemeAttribute:"knob-slot-color"];
         [self setValue:bgColor forThemeAttribute:"increment-line-color"];
@@ -92,7 +92,7 @@
         [self setValue:CGSizeMake(11,5) forThemeAttribute:"decrement-line-size"];
         [self setValue:CGSizeMake(11,5) forThemeAttribute:"increment-line-size"];
     }
-    
+
     return self;
 }
 
@@ -100,7 +100,7 @@
 
 
 /*!
-    We're going to define a nice global helper function to load images from the main bundle. 
+    We're going to define a nice global helper function to load images from the main bundle.
 */
 resourcesImage = function(path, width, height)
 {
