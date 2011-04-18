@@ -62,7 +62,7 @@
 
 
     // now find the inset of the textfield
-   // console.log([specialNumber sizeWithFont:cachedFont], [number sizeWithFont:cachedFont]);
+    // console.log([specialNumber sizeWithFont:cachedFont], [number sizeWithFont:cachedFont]);
     var inset = 15,
         width = [self frameSize].width,
         height = [textfield frameSize].height;
