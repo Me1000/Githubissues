@@ -11,6 +11,7 @@
 @import "ISToolBar.j"
 @import "ISAccountView.j"
 @import "ISRepositoriesController.j"
+@import "ISSourceListDataView.j"
 
 
 
@@ -42,6 +43,40 @@
     [theWindow setFullPlatformWindow:YES];
 
     [mainContentView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("MainContentTexture.png", 164, 141)]];
+}
+
+@end
+
+
+/*!
+    FIX ME:
+    Make this more awesome
+*/
+@implementation ISScroller : CPScroller
+
+- (id)initWithFrame:(CGRect)aFrame
+{
+    self = [super initWithFrame:aFrame];
+    
+    if(self)
+    {
+        var scrollerColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("scroller_top.png", 11, 6),
+            resourcesImage("scroller_mid.png", 11, 9),
+            resourcesImage("scroller_bot.png", 11, 6)
+        ] isVertical:YES]];
+
+        var bgColor = [CPColor clearColor];
+        
+        [self setValue:scrollerColor forThemeAttribute:"knob-color"];
+        [self setValue:bgColor forThemeAttribute:"knob-slot-color"];
+        [self setValue:bgColor forThemeAttribute:"increment-line-color"];
+        [self setValue:bgColor forThemeAttribute:"decrement-line-color"];
+        [self setValue:CGSizeMake(11,5) forThemeAttribute:"decrement-line-size"];
+        [self setValue:CGSizeMake(11,5) forThemeAttribute:"increment-line-size"];
+    }
+    
+    return self;
 }
 
 @end

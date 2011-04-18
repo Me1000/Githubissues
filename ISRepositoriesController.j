@@ -37,7 +37,7 @@ var sharedController = nil;
 
 - (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
-    return aRow;
+    return {"text":aRow, "image":YES, "number":"100", "specialNumber":"13"};
 }
 
 @end
