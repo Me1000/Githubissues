@@ -53,10 +53,11 @@
 
     var col = [[CPTableColumn alloc] initWithIdentifier:"Repositories"];
 
-    // FIX ME: do this
-     [col setDataView:[[ISSourceListDataView alloc] initWithFrame:CGRectMakeZero()]];
+    [col setDataView:[[ISSourceListDataView alloc] initWithFrame:CGRectMakeZero()]];
 
     [sourceList addTableColumn:col];
+    [sourceList sizeLastColumnToFit];
+    [sourceList setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
     [sourceList setHeaderView:nil];
     [sourceList setCornerView:nil];
     [sourceList setBackgroundColor:nil];
@@ -90,6 +91,7 @@
     [filterList setSelectionHighlightStyle:CPTableViewSelectionHighlightStyleSourceList];
     [filterList setRowHeight:31];
 
+    // FIXME Give this some other data.
     [filterList setDataSource:[ISRepositoriesController sharedController]];
     [filterListScrollView setDocumentView:filterList];
 

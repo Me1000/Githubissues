@@ -78,23 +78,28 @@
 
 - (void)setObjectValue:(id)aValue
 {
-    text = aValue.text;
-    number = aValue.number;
-    specialNumber = aValue.specialNumber;
-
-    if (aValue.image === "locked")
+    if ([aValue isKindOfClass:ISRepository])
     {
-        hasImage = YES;
+        text = [aValue name];
+        number = [aValue openIssues];
+        specialNumber = [aValue issuesAssignedToCurrentUser];
+        hasImage = [aValue isPrivate];
+    }
+    else
+    {
+        text = aValue.text;
+        number = aValue.number;
+        specialNumber = aValue.specialNumber;
     }
 
-    [textfield setStringValue:aValue.text];
+    [textfield setStringValue:text];
 }
 
 - (void)setThemeState:(CPThemeState)aState
 {
     [super setThemeState:aState];
     [textfield setThemeState:aState];
-       
+
 }
 
 - (void)unsetThemeState:(CPThemeState)aState
