@@ -1222,7 +1222,7 @@
 																			<string key="NSFrameSize">{220, 290}</string>
 																			<reference key="NSSuperview" ref="48907036"/>
 																			<reference key="NSWindow"/>
-																			<reference key="NSNextKeyView" ref="546674116"/>
+																			<reference key="NSNextKeyView" ref="532502529"/>
 																		</object>
 																	</object>
 																	<string key="NSFrameSize">{220, 290}</string>
@@ -1269,7 +1269,7 @@
 															<string key="NSFrameSize">{220, 290}</string>
 															<reference key="NSSuperview" ref="451039138"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="48907036"/>
+															<reference key="NSNextKeyView" ref="546674116"/>
 															<int key="NSsFlags">528</int>
 															<reference key="NSVScroller" ref="532502529"/>
 															<reference key="NSHScroller" ref="546674116"/>
@@ -1388,7 +1388,7 @@
 																			<string key="NSFrameSize">{220, 129}</string>
 																			<reference key="NSSuperview" ref="775189175"/>
 																			<reference key="NSWindow"/>
-																			<reference key="NSNextKeyView" ref="862710858"/>
+																			<reference key="NSNextKeyView" ref="84552787"/>
 																		</object>
 																	</object>
 																	<string key="NSFrameSize">{220, 129}</string>
@@ -1427,7 +1427,7 @@
 															<string key="NSFrameSize">{220, 129}</string>
 															<reference key="NSSuperview" ref="513948500"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="775189175"/>
+															<reference key="NSNextKeyView" ref="862710858"/>
 															<int key="NSsFlags">528</int>
 															<reference key="NSVScroller" ref="84552787"/>
 															<reference key="NSHScroller" ref="862710858"/>
@@ -1671,9 +1671,22 @@
 								<object class="NSCustomView" id="611392051">
 									<reference key="NSNextResponder" ref="323643413"/>
 									<int key="NSvFlags">257</int>
+									<object class="NSMutableArray" key="NSSubviews">
+										<bool key="EncodedWithXMLCoder">YES</bool>
+										<object class="NSCustomView" id="63156763">
+											<reference key="NSNextResponder" ref="611392051"/>
+											<int key="NSvFlags">266</int>
+											<string key="NSFrame">{{0, 518}, {579, 36}}</string>
+											<reference key="NSSuperview" ref="611392051"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView"/>
+											<string key="NSClassName">ISSortBar</string>
+										</object>
+									</object>
 									<string key="NSFrame">{{221, 0}, {579, 554}}</string>
 									<reference key="NSSuperview" ref="323643413"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="63156763"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 							</object>
@@ -2425,6 +2438,10 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">463</int>
 						<reference key="object" ref="611392051"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="63156763"/>
+						</object>
 						<reference key="parent" ref="323643413"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -3550,6 +3567,11 @@
 						<reference key="object" ref="476777016"/>
 						<reference key="parent" ref="711835531"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">553</int>
+						<reference key="object" ref="63156763"/>
+						<reference key="parent" ref="611392051"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -3791,6 +3813,7 @@
 					<string>541.IBPluginDependency</string>
 					<string>542.IBPluginDependency</string>
 					<string>543.IBPluginDependency</string>
+					<string>553.IBPluginDependency</string>
 					<string>56.IBPluginDependency</string>
 					<string>56.ImportedFromIB2</string>
 					<string>57.IBEditorWindowLastContentRect</string>
@@ -4070,6 +4093,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>{{155, 102}, {245, 183}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4116,7 +4140,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">552</int>
+			<int key="maxID">553</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4324,6 +4348,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/ISSideBar.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">ISSortBar</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/ISSortBar.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
