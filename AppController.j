@@ -45,14 +45,22 @@
     [theWindow setFullPlatformWindow:YES];
 
     [mainContentView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("MainContentTexture.png", 164, 141)]];
+
+    // we want to know when the source list changes size so we can update the toolbar tabs
+    [sidebar setPostsFrameChangedNotifications:YES];
+    [[CPNotificationCenter defaultCenter] addObserver:self selector:@selector(sourceListDidResize:) name:CPViewFrameDidChangeNotification object:sidebar];
 }
 
 
 // Main splitview delegates
-- (void)splitViewDidResizeSubviews:(CPSplitView)aSplitView
+- (void)sourceListDidResize:(CPNotification)aNote
 {
     // As the splitview resizes
     // we need to reposition the tab view thingy at the top...
+
+    // plus a couple to take the splitview divider into account...
+    var point = [[aNote object] frameSize].width + 2;
+    [toolbar splitViewMovedTo:point];
 }
 
 - (float)splitView:(CPSplitView)aSplitView constrainMinCoordinate:(float)proposedMin ofSubviewAt:(int)subviewIndex

@@ -1,4 +1,5 @@
-var kSortBarHeight = 36;
+var kSortBarHeight = 36,
+    blankImage     = nil;
 
 /*!
     This view represents a bar used for sorting issues
@@ -11,18 +12,21 @@ var kSortBarHeight = 36;
 
     @outlet id      delegate @accessors;
     @outlet CPSearchField searchField;
+
+            CPPopUpButton optionsPopupButton;
 }
 - (void)awakeFromCib
 {
     [self setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("sortbar_backgroung.png", 21, 36)]];
 
+    blankImage = resourcesImage("blank.png", 10, 10);
 
     // FIX ME: I'm sure this can be done easier
-    var items = ["ID", "Title", "Created", "Updated"],
-        keys  = ["id", "title", "created", "updated"],
+    var items = ["ID", "Title", "Created", "Updated", "Creator", "Pull Request"],
+        keys  = ["id", "title", "created", "updated", "creator", "pull_request"],
         c = items.length,
         i = 0,
-        origin = CGPointMakeZero();
+        origin = CGPointMake(45, 0);
 
     sortButtons = [];
     sortDescriptors = [];
@@ -45,18 +49,30 @@ var kSortBarHeight = 36;
         origin.x += [sub frameSize].width;
     }
 
-    // add the search bar
+    // add the gear button thingy
+    optionsPopupButton = [[CPPopUpButton alloc] initWithFrame:CGRectMake(0, 0, 45, kSortBarHeight)];
+
+    [optionsPopupButton addItemWithTitle:nil];
+    [[optionsPopupButton lastItem] setImage:resourcesImage("optionsgear.png",12, 13)];
+    [optionsPopupButton setImagePosition:CPImageOnly];
+    [optionsPopupButton setValue:CGInsetMake(0, 0, 0, 0) forThemeAttribute:"content-inset"];
+
+    [optionsPopupButton setPullsDown:YES];
+    [optionsPopupButton setBordered:NO];
+    [self addSubview:optionsPopupButton];
     
 }
 
 - (void)buttonWasClicked:(id)sender
 {
     // remove the images from all buttons
-    [sortButtons makeObjectsPerformSelector:@selector(setImage:) withObjects:[]];
+    [sortButtons makeObjectsPerformSelector:@selector(setImage:) withObjects:[blankImage]];
+    [sortButtons makeObjectsPerformSelector:@selector(unsetThemeState:) withObjects:[CPThemeStateHighlighted]];
 
     [sortDescriptors removeObject:[sender sortDescriptor]];
     // toggle the sort descriptor
     [sender toggleSort];
+    [sender setThemeState:CPThemeStateHighlighted];
 
     // move the sort descriptor to the front
     [sortDescriptors insertObject:[sender sortDescriptor] atIndex:0];
@@ -99,12 +115,12 @@ var kSortBarHeight = 36;
     sortImageUp = resourcesImage("FIXME_arrowup.png", 10, 10);
     sortImageDown = resourcesImage("FIXME_arrowdown.png", 10, 10);
 
-//    [self setImage:sortImageUp];
+    [self setImage:blankImage];
     [self setImagePosition:CPImageRight];
 
     var size = [self frameSize];
 
-    size.width += 34;
+    size.width += 24;
     size.height = kSortBarHeight;
     [self setFrameSize:size];
 
@@ -114,6 +130,7 @@ var kSortBarHeight = 36;
 - (void)toggleSort
 {
     var newDescriptor = [sortDescriptor reversedSortDescriptor];
+
     sortDescriptor = newDescriptor;
 
     if ([sortDescriptor ascending])
