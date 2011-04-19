@@ -10,6 +10,7 @@ var kSortBarHeight = 36;
             CPArray sortDescriptors;
 
     @outlet id      delegate @accessors;
+    @outlet CPSearchField searchField;
 }
 - (void)awakeFromCib
 {
@@ -43,6 +44,9 @@ var kSortBarHeight = 36;
 
         origin.x += [sub frameSize].width;
     }
+
+    // add the search bar
+    
 }
 
 - (void)buttonWasClicked:(id)sender
