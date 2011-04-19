@@ -14,6 +14,7 @@
 @import "ISSourceListDataView.j"
 @import "ISRepository.j"
 @import "ISSortBar.j"
+@import "ISIssuesController.j"
 
 
 @implementation AppController : CPObject
