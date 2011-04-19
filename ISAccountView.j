@@ -11,8 +11,7 @@
 
 - (void)awakeFromCib
 {
-    var bundle = [CPBundle mainBundle],
-        buttonPattern = [CPColor colorWithPatternImage:resourcesImage("loginbutton.png", 58, 21)],
+    var buttonPattern = [CPColor colorWithPatternImage:resourcesImage("loginbutton.png", 58, 21)],
         buttonPatternActive = [CPColor colorWithPatternImage:resourcesImage("loginbutton-active.png", 58, 21)];
 
     [loginButton setValue:buttonPattern forThemeAttribute:"bezel-color" inState:CPThemeStateNormal];
