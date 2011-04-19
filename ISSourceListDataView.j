@@ -33,11 +33,11 @@ var ISSourceLockImage       = nil,
 
     cachedFont = [CPFont boldSystemFontOfSize:11];
 
-    imageview = [[CPImageView alloc] initWithFrame:CGRectMake(6, 9, 15, 15)];
+    imageview = [[CPImageView alloc] initWithFrame:CGRectMake(5, 9, 15, 15)];
     [imageview setImageScaling:CPScaleNone];
     [self addSubview:imageview];
 
-    textfield = [[CPTextField alloc] initWithFrame:CGRectMake(22, 9, 90, 15)];
+    textfield = [[CPTextField alloc] initWithFrame:CGRectMake(18, 9, 90, 15)];
     [textfield setFont:[CPFont boldSystemFontOfSize:11]];
     [textfield setLineBreakMode:CPLineBreakByTruncatingTail];
     [self addSubview:textfield];
@@ -60,9 +60,9 @@ var ISSourceLockImage       = nil,
     [super layoutSubviews];
 
     if (image)
-        var origin = CGPointMake(19, 9);
+        var origin = CGPointMake(18, 9);
     else
-        var origin = CGPointMake(6, 9);
+        var origin = CGPointMake(5, 9);
 
     [textfield setFrameOrigin:origin];
 
