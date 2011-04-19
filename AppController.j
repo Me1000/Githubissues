@@ -23,7 +23,7 @@
     @outlet ISToolbar   toolbar;
     @outlet ISSideBar   sidebar;
     @outlet CPView      mainContentView;
-
+    @outlet CPSplitView verticalSplitView;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -49,6 +49,20 @@
     // we want to know when the source list changes size so we can update the toolbar tabs
     [sidebar setPostsFrameChangedNotifications:YES];
     [[CPNotificationCenter defaultCenter] addObserver:self selector:@selector(sourceListDidResize:) name:CPViewFrameDidChangeNotification object:sidebar];
+
+    // Special split view styling.
+    [verticalSplitView setValue:1.0 forThemeAttribute:@"pane-divider-thickness"];
+    [verticalSplitView setValue:[CPColor colorWithHexString:"80878d"] forThemeAttribute:@"pane-divider-color"];
+    [verticalSplitView setIsPaneSplitter:YES];
+
+    // To the right of the split view there is a 1px 0.25 alpha white line, but we can't make it part of the splitter
+    // itself because it actually overlaps the lines and widgets on the right side. Instead, make a transparent
+    // overlay view.
+    var rightOfSplitterWhitenessView = [[CPView alloc] initWithFrame:CGRectMake(0, 0, 1, [mainContentView bounds].size.height)];
+    [rightOfSplitterWhitenessView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
+    [rightOfSplitterWhitenessView setBackgroundColor:[CPColor colorWithCSSString:@"rgba(255, 255, 255, 0.267)"]];
+    // XXX This view must always be above all other views in the main content area.
+    [mainContentView addSubview:rightOfSplitterWhitenessView];
 }
 
 
