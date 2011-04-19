@@ -102,15 +102,13 @@
     [filterListScrollView setVerticalScroller:scroller];
 
     shadowOverlayViewTop = [[CPView alloc] initWithFrame:CGRectMake(0, 0, [self bounds].size.width, 8)];
-    var slices = [nil, resourcesImage('sidebar-shadow-top.png', 1, 8), nil],
-        backgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:slices isVertical:YES]];
+    var backgroundColor = [CPColor colorWithPatternImage:resourcesImage('sidebar-shadow-top.png', 1, 8)];
     [shadowOverlayViewTop setBackgroundColor:backgroundColor];
     [shadowOverlayViewTop setAutoresizingMask:CPViewWidthSizable];
     [self addSubview:shadowOverlayViewTop];
 
     shadowOverlayViewRight = [[CPView alloc] initWithFrame:CGRectMake([self bounds].size.width - 5, 0, 5, [self bounds].size.height)];
-    slices = [nil, resourcesImage('sidebar-shadow-right.png', 5, 1), nil];
-    backgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:slices isVertical:NO]];
+    backgroundColor = [CPColor colorWithPatternImage:resourcesImage('sidebar-shadow-right.png', 5, 1)];
     [shadowOverlayViewRight setBackgroundColor:backgroundColor];
     [shadowOverlayViewRight setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
     [self addSubview:shadowOverlayViewRight];
