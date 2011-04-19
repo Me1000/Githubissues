@@ -7,6 +7,8 @@ var kSortBarHeight = 36,
 
 @implementation ISSortBar : CPView
 {
+            CPArray visibleSortItems; //This will be preserved.
+
             CPArray sortButtons;
             CPArray sortDescriptors;
 
@@ -19,6 +21,10 @@ var kSortBarHeight = 36,
 {
     [self setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("sortbar_backgroung.png", 21, 36)]];
 
+    // See if the user has their orn set of visible sort items
+    var defaults = [CPUserDefaults standardUserDefaults];
+    visibleSortItems = [defaults objectForKey:"visibleSortItems"] || [];
+
     blankImage = resourcesImage("blank.png", 10, 10);
 
     // FIX ME: I'm sure this can be done easier
@@ -26,7 +32,10 @@ var kSortBarHeight = 36,
         keys  = ["id", "title", "created", "updated", "creator", "pull_request"],
         c = items.length,
         i = 0,
-        origin = CGPointMake(45, 0);
+        origin = CGPointMake(45, 0),
+        optionsMenu = [[CPMenu alloc] init];
+
+    [optionsMenu setMinimumWidth:130];
 
     sortButtons = [];
     sortDescriptors = [];
@@ -42,23 +51,46 @@ var kSortBarHeight = 36,
         [sub setTarget:self];
         [sub setAction:@selector(buttonWasClicked:)];
 
-        [self addSubview:sub];
-
         [sortButtons addObject:sub];
 
-        origin.x += [sub frameSize].width;
+
+
+        // add the menu item
+        var item = [[CPMenuItem alloc] initWithTitle:items[i] action:@selector(didClickMenuItem:) keyEquivalent:nil];
+
+        if (visibleSortItems.length)
+        {
+            if ([visibleSortItems containsObject:items[i]])
+            {
+                [self addSubview:sub];
+                origin.x += [sub frameSize].width;
+                [item setState:CPOnState];
+            }
+        }
+        else
+        {
+            [item setState:CPOnState];
+            [self addSubview:sub];
+            origin.x += [sub frameSize].width;
+        }
+
+        [optionsMenu addItem:item];
     }
 
     // add the gear button thingy
-    optionsPopupButton = [[CPPopUpButton alloc] initWithFrame:CGRectMake(0, 0, 45, kSortBarHeight)];
+    optionsPopupButton = [[CPPopUpButton alloc] initWithFrame:CGRectMake(18, 12, 12, 13)];
+    [optionsPopupButton setValue:[CPColor colorWithPatternImage:resourcesImage("optionsgear.png",12, 13)] forThemeAttribute:"bezel-color"];
 
-    [optionsPopupButton addItemWithTitle:nil];
-    [[optionsPopupButton lastItem] setImage:resourcesImage("optionsgear.png",12, 13)];
+//    [optionsPopupButton addItemWithTitle:nil];
+  //  [[optionsPopupButton lastItem] setImage:resourcesImage("optionsgear.png",12, 13)];
     [optionsPopupButton setImagePosition:CPImageOnly];
     [optionsPopupButton setValue:CGInsetMake(0, 0, 0, 0) forThemeAttribute:"content-inset"];
 
     [optionsPopupButton setPullsDown:YES];
-    [optionsPopupButton setBordered:NO];
+//    [optionsPopupButton setBordered:NO];
+
+    [optionsPopupButton setMenu:optionsMenu];
+
     [self addSubview:optionsPopupButton];
     
 }
