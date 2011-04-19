@@ -1593,7 +1593,7 @@
 												<object class="NSButton" id="216220366">
 													<reference key="NSNextResponder" ref="64954806"/>
 													<int key="NSvFlags">265</int>
-													<string key="NSFrame">{{159, 14}, {58, 21}}</string>
+													<string key="NSFrame">{{152, 14}, {58, 21}}</string>
 													<reference key="NSSuperview" ref="64954806"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="956880006"/>
@@ -1620,7 +1620,7 @@
 												<object class="NSTextField" id="525848443">
 													<reference key="NSNextResponder" ref="64954806"/>
 													<int key="NSvFlags">268</int>
-													<string key="NSFrame">{{63, 20}, {91, 14}}</string>
+													<string key="NSFrame">{{57, 20}, {91, 14}}</string>
 													<reference key="NSSuperview" ref="64954806"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="216220366"/>
@@ -1646,7 +1646,7 @@
 												<object class="NSTextField" id="470512615">
 													<reference key="NSNextResponder" ref="64954806"/>
 													<int key="NSvFlags">268</int>
-													<string key="NSFrame">{{63, 34}, {91, 13}}</string>
+													<string key="NSFrame">{{57, 34}, {91, 13}}</string>
 													<reference key="NSSuperview" ref="64954806"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="525848443"/>
@@ -1680,7 +1680,7 @@
 															<string>NeXT TIFF v4.0 pasteboard type</string>
 														</object>
 													</object>
-													<string key="NSFrame">{{10, 9}, {45, 45}}</string>
+													<string key="NSFrame">{{6, 9}, {45, 45}}</string>
 													<reference key="NSSuperview" ref="64954806"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="470512615"/>
@@ -1834,7 +1834,7 @@
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="12261708"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
 				<string key="NSMaxSize">{1e+13, 1e+13}</string>
 			</object>
 			<object class="NSCustomObject" id="635946545">
