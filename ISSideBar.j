@@ -19,7 +19,11 @@
 
             CPTableView   filterList;
     @outlet CPScrollView  filterListScrollView;
+
+            CPView        shadowOverlayViewTop;
+            CPView        shadowOverlayViewRight;
 }
+
 - (void)awakeFromCib
 {
     [self setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("SidebarTexture.png", 101, 84)]];
@@ -46,7 +50,6 @@
     frame.origin.y = 0;
     frame.size.height = 38;
     [addRepoButton setFrame:frame];
-
 
     // setup the source list
     sourceList = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
@@ -97,16 +100,22 @@
 
     var scroller = [[ISScroller alloc] initWithFrame:CGRectMake(0,0,10,10)];
     [filterListScrollView setVerticalScroller:scroller];
+
+    shadowOverlayViewTop = [[CPView alloc] initWithFrame:CGRectMake(0, 0, [self bounds].size.width, 8)];
+    var slices = [nil, resourcesImage('sidebar-shadow-top.png', 1, 8), nil],
+        backgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:slices isVertical:YES]];
+    [shadowOverlayViewTop setBackgroundColor:backgroundColor];
+    [shadowOverlayViewTop setAutoresizingMask:CPViewWidthSizable];
+    [self addSubview:shadowOverlayViewTop];
+
+    shadowOverlayViewRight = [[CPView alloc] initWithFrame:CGRectMake([self bounds].size.width - 5, 0, 5, [self bounds].size.height)];
+    slices = [nil, resourcesImage('sidebar-shadow-right.png', 5, 1), nil];
+    backgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:slices isVertical:NO]];
+    [shadowOverlayViewRight setBackgroundColor:backgroundColor];
+    [shadowOverlayViewRight setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
+    [self addSubview:shadowOverlayViewRight];
 }
 
-- (void)drawRect:(CGRect)aRect
-{
-    // FIX ME: this isn't working
-    var context = [[CPGraphicsContext currentContext] graphicsPort],
-        gradient = CGGradientCreateWithColorComponents(CGColorSpaceCreateDeviceRGB(), [0, 0, 0, 0, /*2nd:*/ 0, 0, 0, 1], [0,1], 2);
-
-    CGContextDrawLinearGradient(context, gradient, CGPointMake(aRect.size.width -3, 0), CGPointMake(aRect.size.width, 0), nil);
-}
 @end
 
 
