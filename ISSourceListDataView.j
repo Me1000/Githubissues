@@ -10,15 +10,18 @@
         badge. For now the only reason we have this is to show "assigmed repos"
 */
 
+var ISSourceLockImage = nil;
+
 @implementation ISSourceListDataView : CPView
 {
     @outlet CPImageView imageview;
     @outlet CPTextField textfield;
 
-    CPString text;
-    int      number;
-    int      specialNumber;
-    BOOL     hasImage;
+    CPString    text;
+    int         number;
+    int         specialNumber;
+    CPImage     image;
+
 
     CPFont   cachedFont;
 }
@@ -29,6 +32,7 @@
     cachedFont = [CPFont boldSystemFontOfSize:11];
 
     imageview = [[CPImageView alloc] initWithFrame:CGRectMake(6, 9, 15, 15)];
+    [imageview setImageScaling:CPScaleNone];
     [self addSubview:imageview];
 
     textfield = [[CPTextField alloc] initWithFrame:CGRectMake(22, 9, 90, 15)];
@@ -53,8 +57,8 @@
 
     [super layoutSubviews];
 
-    if (hasImage)
-        var origin = CGPointMake(22, 9);
+    if (image)
+        var origin = CGPointMake(19, 9);
     else
         var origin = CGPointMake(6, 9);
 
@@ -78,12 +82,18 @@
 
 - (void)setObjectValue:(id)aValue
 {
+    var image = nil;
     if ([aValue isKindOfClass:ISRepository])
     {
         text = [aValue name];
         number = [aValue openIssues];
         specialNumber = [aValue issuesAssignedToCurrentUser];
-        hasImage = [aValue isPrivate];
+        if ([aValue isPrivate])
+        {
+            if (!ISSourceLockImage)
+                ISSourceLockImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"lock-icon.png"] size:CGSizeMake(8.0, 12.0)];
+            image = ISSourceLockImage;
+        }
     }
     else
     {
@@ -93,6 +103,7 @@
     }
 
     [textfield setStringValue:text];
+    [imageview setImage:image];
 }
 
 - (void)setThemeState:(CPThemeState)aState
