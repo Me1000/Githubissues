@@ -10,7 +10,8 @@
         badge. For now the only reason we have this is to show "assigmed repos"
 */
 
-var ISSourceLockImage = nil;
+var ISSourceLockImage       = nil,
+    ISSourceLockImageActive = nil;
 
 @implementation ISSourceListDataView : CPView
 {
@@ -21,6 +22,7 @@ var ISSourceLockImage = nil;
     int         number;
     int         specialNumber;
     CPImage     image;
+    CPImage     selectedImage;
 
 
     CPFont   cachedFont;
@@ -93,6 +95,10 @@ var ISSourceLockImage = nil;
             if (!ISSourceLockImage)
                 ISSourceLockImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"lock-icon.png"] size:CGSizeMake(8.0, 12.0)];
             image = ISSourceLockImage;
+
+            if (!ISSourceLockImageActive)
+                ISSourceLockImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"lock-icon-active.png"] size:CGSizeMake(8.0, 12.0)];
+            selectedImage = ISSourceLockImageActive;
         }
     }
     else
@@ -110,13 +116,14 @@ var ISSourceLockImage = nil;
 {
     [super setThemeState:aState];
     [textfield setThemeState:aState];
-
+    [imageview setImage:[self hasThemeState:CPThemeStateSelectedDataView] ? selectedImage : image];
 }
 
 - (void)unsetThemeState:(CPThemeState)aState
 {
     [super unsetThemeState:aState];
     [textfield unsetThemeState:aState];
+    [imageview setImage:[self hasThemeState:CPThemeStateSelectedDataView] ? selectedImage : image];
 }
 
 - (id)initWithCoder:(CPCoder)aCoder
