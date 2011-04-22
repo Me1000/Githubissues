@@ -139,6 +139,8 @@ var ISSourceLockImage       = nil,
     [super setThemeState:aState];
     [textfield setThemeState:aState];
     [imageview setImage:[self hasThemeState:CPThemeStateSelectedDataView] ? selectedImage : image];
+    [assignedBadgeView setThemeState:aState];
+    [openBadgeView setThemeState:aState];
 }
 
 - (void)unsetThemeState:(CPThemeState)aState
@@ -146,6 +148,8 @@ var ISSourceLockImage       = nil,
     [super unsetThemeState:aState];
     [textfield unsetThemeState:aState];
     [imageview setImage:[self hasThemeState:CPThemeStateSelectedDataView] ? selectedImage : image];
+    [assignedBadgeView unsetThemeState:aState];
+    [openBadgeView unsetThemeState:aState];
 }
 
 - (id)initWithCoder:(CPCoder)aCoder
@@ -195,11 +199,32 @@ var ISSourceLockImage       = nil,
     [self setAlignment:CPCenterTextAlignment];
 }
 
+
+- (void)setThemeState:(CPThemeState)aState
+{
+    [super setThemeState:aState];
+    [self updateBackground];
+}
+
+- (void)unsetThemeState:(CPThemeState)aState
+{
+    [super unsetThemeState:aState];
+    [self updateBackground];
+}
+
+- (void)updateBackground
+{
+
+}
+
 @end
 
 var ISAssignedBadgeViewBackgroundColor = nil,
     ISOpenBadgeViewBackgroundColor = nil,
-    ISOpenBadgeViewClosedBackgroundColor = nil;
+    ISOpenBadgeViewClosedBackgroundColor = nil,
+    ISAssignedBadgeActiveViewBackgroundColor = nil,
+    ISOpenBadgeViewActiveBackgroundColor = nil,
+    ISOpenBadgeViewActiveClosedBackgroundColor = nil;
 
 @implementation ISAssignedBadgeView : ISBadgeView
 {
@@ -219,9 +244,20 @@ var ISAssignedBadgeViewBackgroundColor = nil,
             resourcesImage("assigned-badge-middle.png", 1, 17),
             resourcesImage("assigned-badge-right.png", 1, 17)
         ] isVertical:NO]];
+
+        ISAssignedBadgeActiveViewBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("assigned-badge-active-left.png", 7, 17),
+            resourcesImage("assigned-badge-active-middle.png", 1, 17),
+            resourcesImage("assigned-badge-active-right.png", 1, 17)
+        ] isVertical:NO]];
     }
 
     [self setBackgroundColor:ISAssignedBadgeViewBackgroundColor];
+}
+
+- (void)updateBackground
+{
+    [self setBackgroundColor:[self hasThemeState:CPThemeStateSelectedDataView] ? ISAssignedBadgeActiveViewBackgroundColor : ISAssignedBadgeViewBackgroundColor];
 }
 
 @end
@@ -244,13 +280,23 @@ var ISAssignedBadgeViewBackgroundColor = nil,
             resourcesImage("open-badge-middle.png", 1, 17),
             resourcesImage("open-badge-right.png", 7, 17)
         ] isVertical:NO]];
-    }
-    if (!ISOpenBadgeViewClosedBackgroundColor)
-    {
+
         ISOpenBadgeViewClosedBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
             resourcesImage("open-badge-closed-left.png", 7, 17),
             resourcesImage("open-badge-middle.png", 1, 17),
             resourcesImage("open-badge-right.png", 7, 17)
+        ] isVertical:NO]];
+
+        ISOpenBadgeActiveViewBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("open-badge-active-left.png", 1, 17),
+            resourcesImage("open-badge-active-middle.png", 1, 17),
+            resourcesImage("open-badge-active-right.png", 7, 17)
+        ] isVertical:NO]];
+
+        ISOpenBadgeActiveViewClosedBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("open-badge-closed-active-left.png", 7, 17),
+            resourcesImage("open-badge-active-middle.png", 1, 17),
+            resourcesImage("open-badge-active-right.png", 7, 17)
         ] isVertical:NO]];
     }
 
@@ -260,7 +306,15 @@ var ISAssignedBadgeViewBackgroundColor = nil,
 - (void)setIsClosed:(BOOL)aFlag
 {
     isClosed = aFlag;
-    [self setBackgroundColor:isClosed ? ISOpenBadgeViewClosedBackgroundColor : ISOpenBadgeViewBackgroundColor];
+    [self updateBackground];
+}
+
+- (void)updateBackground
+{
+    [self setBackgroundColor:
+        [self hasThemeState:CPThemeStateSelectedDataView] ?
+            isClosed ? ISOpenBadgeActiveViewClosedBackgroundColor : ISOpenBadgeActiveViewBackgroundColor :
+            isClosed ? ISOpenBadgeViewClosedBackgroundColor : ISOpenBadgeViewBackgroundColor];
 }
 
 @end
