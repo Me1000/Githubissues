@@ -7,7 +7,7 @@
     2. Text - duh
     3. Number - The main number in the badge
     4. Special number - displayed in green with the
-        badge. For now the only reason we have this is to show "assigmed repos"
+        badge. For now the only reason we have this is to show "assigned repos"
 */
 
 var ISSourceLockImage       = nil,
@@ -25,7 +25,6 @@ var ISSourceLockImage       = nil,
     int         specialNumber;
     CPImage     image;
     CPImage     selectedImage;
-
 
     CPFont   cachedFont;
 }
@@ -76,7 +75,6 @@ var ISSourceLockImage       = nil,
 
     [textfield setFrameOrigin:origin];
 
-
     // now find the inset of the textfield
     // console.log([specialNumber sizeWithFont:cachedFont], [number sizeWithFont:cachedFont]);
     var inset = 15,
@@ -85,12 +83,12 @@ var ISSourceLockImage       = nil,
 
     [textfield setFrameSize:CGSizeMake(width - origin.x - inset, height)];
 
+    // Size to fit works automatically because the theme insets are correct.
     [assignedBadgeView sizeToFit];
     [assignedBadgeView setFrame:CGRectMake(width - [assignedBadgeView bounds].size.width - 30, 9, [assignedBadgeView bounds].size.width, 17)];
 
     [openBadgeView sizeToFit];
     [openBadgeView setFrameOrigin:CGPointMake(CGRectGetMaxX([assignedBadgeView frame]), 9)];
-    //[openBadgeView setFrame:CGRectMake(CGRectGetMaxX([assignedBadgeView frame]), 9, [openBadgeView bounds].size.width, 17)];
 }
 
 - (void)drawRect:(CGRect)aRect
@@ -175,9 +173,6 @@ var ISSourceLockImage       = nil,
 @end
 
 @implementation ISBadgeView : CPTextField
-{
-
-}
 
 - (id)initWithFrame:aFrame
 {
@@ -219,6 +214,7 @@ var ISSourceLockImage       = nil,
 
 @end
 
+// Reuse these for optimal speed - we don't want one colour instance per row.
 var ISAssignedBadgeViewBackgroundColor = nil,
     ISOpenBadgeViewBackgroundColor = nil,
     ISOpenBadgeViewClosedBackgroundColor = nil,
@@ -227,9 +223,6 @@ var ISAssignedBadgeViewBackgroundColor = nil,
     ISOpenBadgeViewActiveClosedBackgroundColor = nil;
 
 @implementation ISAssignedBadgeView : ISBadgeView
-{
-
-}
 
 - (void)applyLook
 {
