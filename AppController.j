@@ -2,8 +2,8 @@
  * AppController.j
  * GithubIssues
  *
- * Created by You on April 14, 2011.
- * Copyright 2011, Your Company All rights reserved.
+ * Created by Randy Luecke on April 14, 2011.
+ * Copyright 2011, RCLConcepts, LLC All rights reserved.
  */
 
 @import <Foundation/CPObject.j>
@@ -15,6 +15,7 @@
 @import "ISRepository.j"
 @import "ISSortBar.j"
 @import "ISIssuesController.j"
+@import "CPWindow+animations.j"
 
 
 @implementation AppController : CPObject
@@ -43,6 +44,7 @@
     [mainContentView setAutoresizingMask:CPViewWidthSizable];
     // In this case, we want the window from Cib to become our full browser window
     [theWindow setFullPlatformWindow:YES];
+
 
     [mainContentView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("MainContentTexture.png", 164, 141)]];
 
