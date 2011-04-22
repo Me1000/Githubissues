@@ -1,3 +1,11 @@
+/*
+ * AppController.j
+ * GithubIssues
+ *
+ * Created by Randy Luecke on April 14, 2011.
+ * Copyright 2011, RCLConcepts, LLC All rights reserved.
+ */
+
 /*!
     ISToolbar represents a simple view that acts as a toolbar.
     There are various reasons we're not using a CPToolbar here,

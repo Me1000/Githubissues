@@ -1,3 +1,10 @@
+/*
+ * AppController.j
+ * GithubIssues
+ *
+ * Created by Randy Luecke on April 14, 2011.
+ * Copyright 2011, RCLConcepts, LLC All rights reserved.
+ */
 
 /*!
     This class is a singleton that allows for the managing of repositories

@@ -1,3 +1,11 @@
+/*
+ * AppController.j
+ * GithubIssues
+ *
+ * Created by Randy Luecke on April 14, 2011.
+ * Copyright 2011, RCLConcepts, LLC All rights reserved.
+ */
+
 /*!
     This data view is used to display nearly every item in the sidebar
     There are four components to the object value
