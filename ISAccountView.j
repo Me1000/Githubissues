@@ -9,6 +9,9 @@
 /*!
     The account view shows the login status of the user
 */
+
+var octocatImage = nil;
+
 @implementation ISAccountView : CPView
 {
     @outlet CPImageView avatarView;
@@ -21,6 +24,8 @@
 {
     var buttonPattern = [CPColor colorWithPatternImage:resourcesImage("loginbutton.png", 58, 21)],
         buttonPatternActive = [CPColor colorWithPatternImage:resourcesImage("loginbutton-active.png", 58, 21)];
+
+    octocatImage = resourcesImage("octocat32.png", 32, 32);
 
     [loginButton setValue:buttonPattern forThemeAttribute:"bezel-color" inState:CPThemeStateNormal];
     [loginButton setValue:buttonPatternActive forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
@@ -50,6 +55,41 @@
     [loggedInAsField setFrameSize:size];
 
     [avatarView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("userViewImageBackground-large.png", 45, 45)]];
+
+    [[CPNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(loginStatusDidChange:) 
+                                                 name:CPUserSessionManagerStatusDidChangeNotification 
+                                               object:nil];
+
+    [self loginStatusDidChange:nil];
+
+}
+
+- (@action)toggleLogin:(id)sender
+{
+    [[ISGithubAPIController sharedController] toggleAuthentication:sender];
+}
+
+- (void)loginStatusDidChange:(CPNotification)aNote
+{
+    var githubController = [ISGithubAPIController sharedController],
+        isLoggedIn = [githubController isAuthenticated];
+    
+    if (isLoggedIn)
+    {
+        [loggedInAsField setStringValue:"Logged in as"];
+        [accountNameField setStringValue:[githubController username]];
+        [avatarView setImage:[githubController userThumbnailImage]];
+        [loginButton setTitle:"Logout"];
+    }
+    else
+    {
+        [loggedInAsField setStringValue:"Not logged in"];
+        [accountNameField setStringValue:""];
+        [avatarView setImage:octocatImage];
+
+        [loginButton setTitle:"Login"];
+    }
 }
 
 @end

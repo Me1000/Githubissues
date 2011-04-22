@@ -16,6 +16,7 @@
 @import "ISSortBar.j"
 @import "ISIssuesController.j"
 @import "CPWindow+animations.j"
+@import "ISGithubAPIController.j"
 
 
 @implementation AppController : CPObject
@@ -31,6 +32,18 @@
 {
     // This is called when the application is done loading.
     [CPMenu setMenuBarVisible:NO];
+
+
+    // try to login
+    var defaults = [CPUserDefaults standardUserDefaults],
+        user = [defaults objectForKey:"username"],
+        key = [defaults objectForKey:"apikey"],
+        apicontroller = [ISGithubAPIController sharedController];
+
+    [apicontroller setUsername:user];
+    [apicontroller setApiKey:key];
+
+    [apicontroller authenticateWithCallback:nil];
 }
 
 - (void)awakeFromCib
@@ -53,14 +66,14 @@
     [[CPNotificationCenter defaultCenter] addObserver:self selector:@selector(sourceListDidResize:) name:CPViewFrameDidChangeNotification object:sidebar];
 
     // Special split view styling.
-    [verticalSplitView setValue:[CPColor colorWithHexString:"80878d"] forThemeAttribute:@"pane-divider-color"];
+    [verticalSplitView setValue:[CPColor colorWithHexString:"80878d"] forThemeAttribute:"pane-divider-color"];
 
     // To the right of the split view there is a 1px 0.25 alpha white line, but we can't make it part of the splitter
     // itself because it actually overlaps the lines and widgets on the right side. Instead, make a transparent
     // overlay view.
     var rightOfSplitterWhitenessView = [[CPView alloc] initWithFrame:CGRectMake(0, 0, 1, [mainContentView bounds].size.height)];
     [rightOfSplitterWhitenessView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
-    [rightOfSplitterWhitenessView setBackgroundColor:[CPColor colorWithCSSString:@"rgba(255, 255, 255, 0.267)"]];
+    [rightOfSplitterWhitenessView setBackgroundColor:[CPColor colorWithCSSString:"rgba(255, 255, 255, 0.267)"]];
     // XXX This view must always be above all other views in the main content area.
     [mainContentView addSubview:rightOfSplitterWhitenessView];
 }
