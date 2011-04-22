@@ -236,7 +236,7 @@ var ISAssignedBadgeViewBackgroundColor = nil,
 {
     [super applyLook];
 
-    [self setValue:CGInsetMake(2.0, 5.0, 3.0, 7.0) forThemeAttribute:"content-inset"];
+    [self setValue:CGInsetMake(3.0, 5.0, 2.0, 7.0) forThemeAttribute:"content-inset"];
 
     if (!ISAssignedBadgeViewBackgroundColor)
     {
@@ -272,7 +272,7 @@ var ISAssignedBadgeViewBackgroundColor = nil,
 {
     [super applyLook];
 
-    [self setValue:CGInsetMake(2.0, 6.0, 3.0, 6.0) forThemeAttribute:"content-inset"];
+    [self setValue:CGInsetMake(3.0, 6.0, 2.0, 6.0) forThemeAttribute:"content-inset"];
 
     if (!ISOpenBadgeViewBackgroundColor)
     {
