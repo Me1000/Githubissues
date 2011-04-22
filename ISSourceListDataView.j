@@ -17,6 +17,8 @@ var ISSourceLockImage       = nil,
 {
     @outlet CPImageView imageview;
     @outlet CPTextField textfield;
+    ISAssignedBadgeView assignedBadgeView;
+    ISOpenBadgeView     openBadgeView;
 
     CPString    text;
     int         number;
@@ -49,6 +51,14 @@ var ISSourceLockImage       = nil,
     [textfield setValue:[CPColor colorWithRed:1 green:1 blue:1 alpha:1] forThemeAttribute:@"text-color" inState:CPThemeStateSelectedTableDataView];
     [textfield setValue:[CPColor colorWithRed:0 green:0 blue:0 alpha:.25] forThemeAttribute:@"text-shadow-color" inState:CPThemeStateSelectedTableDataView];
 
+    assignedBadgeView = [[ISAssignedBadgeView alloc] initWithFrame:CGRectMake(0, 0, 0, 17)];
+    [assignedBadgeView setAutoresizingMask:CPViewMinXMargin];
+    [self addSubview:assignedBadgeView];
+
+    openBadgeView = [[ISOpenBadgeView alloc] initWithFrame:CGRectMake(0, 0, 50, 17)];
+    [openBadgeView setAutoresizingMask:CPViewMinXMargin];
+    [self addSubview:openBadgeView];
+
     return self;
 }
 
@@ -74,6 +84,13 @@ var ISSourceLockImage       = nil,
         height = [textfield frameSize].height;
 
     [textfield setFrameSize:CGSizeMake(width - origin.x - inset, height)];
+
+    [assignedBadgeView sizeToFit];
+    [assignedBadgeView setFrame:CGRectMake(width - [assignedBadgeView bounds].size.width - 30, 9, [assignedBadgeView bounds].size.width, 17)];
+
+    [openBadgeView sizeToFit];
+    [openBadgeView setFrameOrigin:CGPointMake(CGRectGetMaxX([assignedBadgeView frame]), 9)];
+    //[openBadgeView setFrame:CGRectMake(CGRectGetMaxX([assignedBadgeView frame]), 9, [openBadgeView bounds].size.width, 17)];
 }
 
 - (void)drawRect:(CGRect)aRect
@@ -110,6 +127,11 @@ var ISSourceLockImage       = nil,
 
     [textfield setStringValue:text];
     [imageview setImage:image];
+    [assignedBadgeView setStringValue:specialNumber];
+    [assignedBadgeView setHidden:!specialNumber];
+    [openBadgeView setStringValue:number];
+    [openBadgeView setIsClosed:!specialNumber];
+    [openBadgeView setHidden:!number && !specialNumber];
 }
 
 - (void)setThemeState:(CPThemeState)aState
@@ -132,7 +154,8 @@ var ISSourceLockImage       = nil,
 
     imageview = [aCoder decodeObjectForKey:"imageview"];
     textfield = [aCoder decodeObjectForKey:"textfield"];
-
+    assignedBadgeView = [aCoder decodeObjectForKey:"assignedBadgeView"];
+    openBadgeView = [aCoder decodeObjectForKey:"openBadgeView"];
     return self;
 }
 
@@ -141,7 +164,103 @@ var ISSourceLockImage       = nil,
     [super encodeWithCoder:aCoder];
     [aCoder encodeObject:imageview forKey:"imageview"];
     [aCoder encodeObject:textfield forKey:"textfield"];
+    [aCoder encodeObject:assignedBadgeView forKey:"assignedBadgeView"];
+    [aCoder encodeObject:openBadgeView forKey:"openBadgeView"];
 }
 
+@end
+
+@implementation ISBadgeView : CPTextField
+{
+
+}
+
+- (id)initWithFrame:aFrame
+{
+    if (self = [super initWithFrame:aFrame])
+    {
+        [self applyLook];
+    }
+    return self;
+}
+
+- (void)applyLook
+{
+    [self setBezeled:NO];
+    [self setTextColor:[CPColor colorWithHexString:"F5F5F5"]];
+    [self setTextShadowColor:[CPColor colorWithCSSString:@"rgba(0, 0, 0, 0.5)"]];
+    [self setTextShadowOffset:CGSizeMake(0.0, 1.0)];
+    [self setFont:[CPFont systemFontOfSize:11.0]];
+    [self setVerticalAlignment:CPCenterVerticalTextAlignment];
+    [self setAlignment:CPCenterTextAlignment];
+}
+
+@end
+
+var ISAssignedBadgeViewBackgroundColor = nil,
+    ISOpenBadgeViewBackgroundColor = nil,
+    ISOpenBadgeViewClosedBackgroundColor = nil;
+
+@implementation ISAssignedBadgeView : ISBadgeView
+{
+
+}
+
+- (void)applyLook
+{
+    [super applyLook];
+
+    [self setValue:CGInsetMake(2.0, 5.0, 3.0, 7.0) forThemeAttribute:"content-inset"];
+
+    if (!ISAssignedBadgeViewBackgroundColor)
+    {
+        ISAssignedBadgeViewBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("assigned-badge-left.png", 7, 17),
+            resourcesImage("assigned-badge-middle.png", 1, 17),
+            resourcesImage("assigned-badge-right.png", 1, 17)
+        ] isVertical:NO]];
+    }
+
+    [self setBackgroundColor:ISAssignedBadgeViewBackgroundColor];
+}
+
+@end
+
+@implementation ISOpenBadgeView : ISBadgeView
+{
+    BOOL    isClosed @accessors;
+}
+
+- (void)applyLook
+{
+    [super applyLook];
+
+    [self setValue:CGInsetMake(2.0, 6.0, 3.0, 6.0) forThemeAttribute:"content-inset"];
+
+    if (!ISOpenBadgeViewBackgroundColor)
+    {
+        ISOpenBadgeViewBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("open-badge-left.png", 1, 17),
+            resourcesImage("open-badge-middle.png", 1, 17),
+            resourcesImage("open-badge-right.png", 7, 17)
+        ] isVertical:NO]];
+    }
+    if (!ISOpenBadgeViewClosedBackgroundColor)
+    {
+        ISOpenBadgeViewClosedBackgroundColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+            resourcesImage("open-badge-closed-left.png", 7, 17),
+            resourcesImage("open-badge-middle.png", 1, 17),
+            resourcesImage("open-badge-right.png", 7, 17)
+        ] isVertical:NO]];
+    }
+
+    [self setIsClosed:YES];
+}
+
+- (void)setIsClosed:(BOOL)aFlag
+{
+    isClosed = aFlag;
+    [self setBackgroundColor:isClosed ? ISOpenBadgeViewClosedBackgroundColor : ISOpenBadgeViewBackgroundColor];
+}
 
 @end
