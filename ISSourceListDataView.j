@@ -99,12 +99,6 @@ var ISSourceLockImage       = nil,
     [openBadgeView setFrameOrigin:CGPointMake(CGRectGetMaxX([assignedBadgeView frame]), 9)];
 }
 
-- (void)drawRect:(CGRect)aRect
-{
-    // FIX ME:
-    // add badge drawing
-}
-
 - (void)setObjectValue:(id)aValue
 {
     var image = nil;

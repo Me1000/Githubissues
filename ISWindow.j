@@ -5,7 +5,11 @@
     used for the awesome translucent windows
 */
 
-var WindowBackground = nil;
+var WindowBackground = nil,
+    GreenButtonColor = nil,
+    GreenButtonDownColor = nil,
+    RedButtonColor = nil,
+    RedButtonDownColor = nil;
 
 @implementation ISWindow : CPWindow
 
@@ -24,11 +28,34 @@ var WindowBackground = nil;
         resourcesImage("windows/popoverwindow-7.png", 17, 62),
         resourcesImage("windows/popoverwindow-8.png", 44, 62)
     ]]];
+
+    GreenButtonColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("green-button-0.png", 13, 23),
+        resourcesImage("green-button-1.png", 2, 23),
+        resourcesImage("green-button-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    RedButtonColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("red-button-0.png", 13, 23),
+        resourcesImage("red-button-1.png", 2, 23),
+        resourcesImage("red-button-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    GreenButtonDownColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("green-button-down-0.png", 13, 23),
+        resourcesImage("green-button-down-1.png", 2, 23),
+        resourcesImage("green-button-down-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    RedButtonDownColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("red-button-down-0.png", 13, 23),
+        resourcesImage("red-button-down-1.png", 2, 23),
+        resourcesImage("red-button-down-2.png", 13, 23)
+    ] isVertical:NO]];
 }
 
 - (void)awakeFromCib
 {
-//    [self setStyleMask:CPBorderlessWindowMask];
     [[self contentView] setBackgroundColor:WindowBackground];
 }
 
@@ -62,13 +89,13 @@ var SharedNewRepoWindow = nil;
 
 + (id)sharedWindow
 {
-console.log([SharedNewRepoWindow frame]);
     return SharedNewRepoWindow;
 }
 
 - (void)awakeFromCib
 {
-[super awakeFromCib];
+    [super awakeFromCib];
+
     SharedNewRepoWindow = self;
 
     var bezel = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
@@ -84,6 +111,20 @@ console.log([SharedNewRepoWindow frame]);
     [repoNameField setValue:CPCenterVerticalTextAlignment forThemeAttribute:"vertical-alignment"];
     [repoNameField setValue: CGInsetMake(2.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset"];
     [repoNameField setValue: CGInsetMake(0.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset" inState:CPThemeStateEditing|CPThemeStateBezeled];
+
+
+    [submitButton setValue:GreenButtonColor forThemeAttribute:"bezel-color"];
+    [submitButton setValue:GreenButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
+    [submitButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
+    [submitButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
+    [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
+
+    [cancelButton setValue:RedButtonColor forThemeAttribute:"bezel-color"];
+    [cancelButton setValue:RedButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
+    [cancelButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
+    [cancelButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
+    [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
+    
 
 }
 
