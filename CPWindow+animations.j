@@ -116,7 +116,7 @@ CPWindowAnimationCornerBottomRight  = "100% 100%";
     },0);
 }
 
-- (void)orderOutWithAnimation(id)sender
+- (void)orderOutWithAnimation:(id)sender
 {
 
     var time = self.animationLength || "230",

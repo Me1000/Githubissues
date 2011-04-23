@@ -17,6 +17,7 @@
 @import "ISIssuesController.j"
 @import "CPWindow+animations.j"
 @import "ISGithubAPIController.j"
+@import "ISWindow.j"
 
 
 @implementation AppController : CPObject
@@ -76,6 +77,15 @@
     [rightOfSplitterWhitenessView setBackgroundColor:[CPColor colorWithCSSString:"rgba(255, 255, 255, 0.267)"]];
     // XXX This view must always be above all other views in the main content area.
     [mainContentView addSubview:rightOfSplitterWhitenessView];
+}
+
+
+- (IBAction)newRepo:(id)aSender
+{
+    var repoWindow = [ISNewRepoWindow sharedWindow];
+    [repoWindow setAnimationLocation:"15% 0%"];
+    [repoWindow setAnimationLength:"170"];
+    [repoWindow orderFontWithAnimation:aSender];
 }
 
 
