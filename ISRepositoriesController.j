@@ -30,6 +30,11 @@ var sharedController = nil,
     CPTableView filterlist @accessors;
 }
 
+- (void)awakeFromCib
+{
+    sharedController = self;
+}
+
 + (id)sharedController
 {
     if (!sharedController)
@@ -47,21 +52,28 @@ var sharedController = nil,
     return self;
 }
 
+- (void)addRepo:(ISRepository)aRepo
+{
+    
+}
+
+- (void)addRepository:(ISRepository)aRepo select:(BOOL)shouldSelect
+{
+    [sortedRepos addObject:aRepo];
+    [sourceList reloadData];
+
+    if (shouldSelect)
+        [sourceList selectRowIndexes:[CPIndexSet indexSetWithIndex:([sortedRepos count] -1)] byExtendingSelection:NO];
+}
+
 - (int)numberOfRowsInTableView:(CPTableView)aTable
 {
-    return TEST_DATA.length;
+    return [sortedRepos count];
 }
 
 - (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
-    var r = [ISRepository new],
-        testRow = TEST_DATA[aRow];
-    // TODO Don't create a new object every call.
-    [r setName:testRow.name];
-    [r setIsPrivate:testRow.is_private];
-    [r setOpenIssues:testRow.open];
-    [r setIssuesAssignedToCurrentUser:testRow.mine];
-    return r;
+    return sortedRepos[aRow];
 }
 
 @end

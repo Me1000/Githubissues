@@ -19,6 +19,7 @@
 @implementation ISRepository : CPObject
 {
     CPString    name @accessors;
+    CPString    identifier @accessors;
     BOOL        isPrivate @accessors;
     int         openIssues @accessors;
     // TODO Come up with a better name.

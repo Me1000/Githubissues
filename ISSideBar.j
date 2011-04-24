@@ -81,7 +81,13 @@
                                                                         ]
                                                                forKeys: [CPSourceListGradient, CPSourceListTopLineColor, CPSourceListBottomLineColor]]
 
-    [sourceList setDataSource:[ISRepositoriesController sharedController]];
+    var controller = [ISRepositoriesController sharedController];
+
+    [sourceList setDataSource:controller];
+    [sourceList setDelegate:controller];
+
+    [controller setSourceList:sourceList];
+
     [sourceListScrollView setDocumentView:sourceList];
     [sourceList setSelectionGradientColors:sourceListSelectionColor];
 

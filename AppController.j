@@ -49,15 +49,24 @@
 
 - (void)awakeFromCib
 {
-    // This is called when the cib is done loading.
-    // You can implement this method on any object instantiated from a Cib.
-    // It's a useful hook for setting up current UI values, and other things.
-
-
     // FIX ME: Xcode 4 wont let me do this... wtfbbq
     [mainContentView setAutoresizingMask:CPViewWidthSizable];
-    // In this case, we want the window from Cib to become our full browser window
-    [theWindow setFullPlatformWindow:YES];
+
+
+    if ([CPPlatform isBrowser])
+        // In this case, we want the window from Cib to become our full browser window
+        [theWindow setFullPlatformWindow:YES];
+    else
+    {
+        // FIX ME: make this a sexy ISWindow style window
+        var contentView = [theWindow contentView];
+        theWindow = [[ISWindow alloc] initWithContentRect:CGRectMake(50, 50, 1000, 670) styleMask:nil];
+
+        [contentView setFrame:CGRectMake(15,45,920,640)];
+
+        [[theWindow contentView] addSubview:contentView];
+        [theWindow orderFront:self];
+    }
 
 
     [mainContentView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("MainContentTexture.png", 164, 141)]];
@@ -67,6 +76,7 @@
     [[CPNotificationCenter defaultCenter] addObserver:self selector:@selector(sourceListDidResize:) name:CPViewFrameDidChangeNotification object:sidebar];
 
     // Special split view styling.
+    // FIX ME: get the rbga values here
     [verticalSplitView setValue:[CPColor colorWithHexString:"80878d"] forThemeAttribute:"pane-divider-color"];
 
     // To the right of the split view there is a 1px 0.25 alpha white line, but we can't make it part of the splitter
@@ -86,6 +96,7 @@
     [repoWindow setAnimationLocation:"15% 0%"];
     [repoWindow setAnimationLength:"170"];
     [repoWindow orderFontWithAnimation:aSender];
+    [repoWindow makeKeyWindow];
 }
 
 

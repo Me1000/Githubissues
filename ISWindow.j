@@ -82,9 +82,11 @@ var SharedNewRepoWindow = nil;
 
 @implementation ISNewRepoWindow : ISWindow
 {
-    @outlet CPTextField repoNameField;
-    @outlet CPButton    submitButton;
-    @outlet CPButton    cancelButton;
+    @outlet CPTextField               repoNameField;
+    @outlet CPButton                  submitButton;
+    @outlet CPButton                  cancelButton;
+
+    @outlet ISRepositoriesController repoController;
 }
 
 + (id)sharedWindow
@@ -130,12 +132,26 @@ var SharedNewRepoWindow = nil;
 
 - (@action)addRepo:(id)sender
 {
+    var callback = function(aRepo, request) {
+        [repoController addRepository:aRepo select:YES];
+        [self orderOutWithAnimation:sender];
+    }
 
+    [[ISGithubAPIController sharedController] loadRepositoryWithIdentifier:[repoNameField stringValue] callback:callback];
 }
 
 - (@action)cancel:(id)sender
 {
     [self orderOutWithAnimation:sender];
+}
+
+- (void)sendEvent:(CPEvent)anEvent
+{
+console.log("test")
+    if ([anEvent type] === CPKeyUp && [anEvent keyCode] === CPTabKeyCode)
+        [self makeFirstResponder:repoNameField];
+    else
+        [super sendEvent:anEvent];
 }
 
 @end

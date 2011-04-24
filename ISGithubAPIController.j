@@ -1,10 +1,10 @@
 @import "md5-min.js"
 
 BASE_API = "/github/";
-BASE_URL = "https://github.com/";
+BASE_URL = "https://api.github.com/";
 
 if (window.location && window.location.protocol === "file:")
-    BASE_API = BASE_URL + "api/v2/json/";
+    BASE_API = BASE_URL + "";
 
 var SharedController = nil,
     GravatarBaseURL = "http://www.gravatar.com/avatar/";
@@ -26,6 +26,8 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
 
 @implementation ISGithubAPIController : CPObject
 {
+    CPDictionary    repositoriesByIdentifier @accessors(readonly);
+
     CPString username @accessors;
     CPString email @accessors;
     CPString emailAddressHashed @accessors;
@@ -46,6 +48,15 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
         SharedController = [[ISGithubAPIController alloc] init];
 
     return SharedController;
+}
+
+- (id)init
+{
+    self = [super init];
+
+    repositoriesByIdentifier = [CPDictionary dictionary];
+
+    return self;
 }
 
 - (BOOL)isAuthenticated
@@ -99,7 +110,7 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
         if (oauthAccessToken)
             authString += "&access_token="+encodeURIComponent(oauthAccessToken);
         else
-            authString += "&login="+encodeURIComponent(username)+"&token="+encodeURIComponent(authenticationToken);
+            authString += "&login="+encodeURIComponent(username)+"&token="+encodeURIComponent(apiKey);
     }
 
     return authString;
@@ -108,6 +119,9 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
 - (void)authenticateWithCallback:(Function)aCallback
 {
     var request = new CFHTTPRequest();
+
+    // Use V3 of the Github API
+    request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     if (oauthAccessToken)
         request.open("GET", BASE_API + "user/show?access_token=" + encodeURIComponent(oauthAccessToken), true);
@@ -201,5 +215,82 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
             }
 }
 
+- (void)loadRepositoryWithIdentifier:(CPString)anIdentifier callback:(Function)aCallback
+{
+    var parts = anIdentifier.split("/");
+    if ([parts count] > 2)
+        anIdentifier = parts.slice(0, 2).join("/");
+
+    var request = new CFHTTPRequest();
+
+    // Use V3 of the Github API
+    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+
+    request.open("GET", BASE_API+"repos/"+anIdentifier+".json"+[self _credentialsString], true);
+
+    request.oncomplete = function()
+    {
+        var data = nil;
+        if (request.success())
+        {
+            try {
+
+                data = JSON.parse(request.responseText());
+
+                var newRepo = [[ISRepository alloc] init];
+                [newRepo setName:data.name];
+                [newRepo setIdentifier:anIdentifier];
+                [newRepo setIsPrivate:data.private];
+                [newRepo setOpenIssues:data.open_issues];
+                [newRepo setIssuesAssignedToCurrentUser:0];
+
+                [repositoriesByIdentifier setObject:newRepo forKey:anIdentifier];
+            }
+            catch (e) {
+                CPLog.error("Unable to load repositority with identifier: "+anIdentifier+" -- "+e);
+            }
+        }
+
+        if (aCallback)
+            aCallback(newRepo, request);
+
+        if (newRepo)
+            [self loadLabelsForRepository:newRepo];
+
+        [[CPRunLoop currentRunLoop] performSelectors];
+    }
+
+    request.send("");
+}
+
+- (void)loadLabelsForRepository:(ISRepository)aRepo
+{
+    ///repos/:user/:repo/labels.json
+
+    var request = new CFHTTPRequest();
+    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    request.open("GET", BASE_API+"repos/"+[aRepo identifier]+"/labels.json"+[self _credentialsString], true);
+
+    request.oncomplete = function()
+    {
+        var labels = [];
+        if (request.success())
+        {
+            try
+            {
+                labels = JSON.parse(request.responseText()) || [];
+            }
+            catch (e)
+            {
+                CPLog.error(@"Unable to load labels for issue: " + anIssue + @" -- " + e);
+            }
+        }
+
+        aRepo.labels = labels;
+        [[CPRunLoop currentRunLoop] performSelectors];
+    };
+
+    request.send(@"");
+}
 
 @end

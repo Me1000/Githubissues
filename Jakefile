@@ -2,8 +2,8 @@
  * Jakefile
  * GithubIssues
  *
- * Created by You on April 14, 2011.
- * Copyright 2011, Your Company All rights reserved.
+ * Created by Randy Luecke on April 14, 2011.
+ * Copyright 2011, RCLConcepts All rights reserved.
  */
 
 var ENV = require("system").env,
@@ -26,7 +26,7 @@ app ("GithubIssues", function(task)
     task.setAuthor("Your Company");
     task.setEmail("feedback @nospam@ yourcompany.com");
     task.setSummary("GithubIssues");
-    task.setSources((new FileList("**/*.j")).exclude(FILE.join("Build", "**")));
+    task.setSources((new FileList("**/*.{j,js}")).exclude(FILE.join("Build", "**")));
     task.setResources(new FileList("Resources/**"));
     task.setIndexFilePath("index.html");
     task.setInfoPlistPath("Info.plist");
@@ -40,6 +40,7 @@ app ("GithubIssues", function(task)
 
 task ("default", ["GithubIssues"], function()
 {
+    OS.system("cp *.js " + OS.enquote(FILE.join("Build", configuration, "GithubIssues", ".")));
     printResults(configuration);
 });
 
