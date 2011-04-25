@@ -19,6 +19,7 @@
 @import "ISGithubAPIController.j"
 @import "ISWindow.j"
 @import "EKActivityIndicatorView.j"
+@import "ISIssueDataView.j"
 
 
 @implementation AppController : CPObject

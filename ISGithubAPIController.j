@@ -149,7 +149,7 @@ var APIURLWithString = function(/*CPString*/aString)
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     // FIX ME: this URL is wrong.
-    request.open("GET", [self _urlForAPICall:"users/"+username+".json"], true);
+    request.open("GET", [self _urlForAPICall:"user.json"], true);
 
     request.oncomplete = function()
     {

@@ -23,6 +23,9 @@
             CPTableView issuesList;
 
             CPString visisbleIssuesKey;
+
+
+    @outlet ISIssueDataView dataviewproto;
     
 }
 
@@ -60,12 +63,33 @@
         [issuesList setDelegate:self];
 
         var col = [[CPTableColumn alloc] initWithIdentifier:"issues"];
+        [col setDataView:dataviewproto];
+        [issuesList setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
         [issuesList setHeaderView:nil];
         [issuesList setCornerView:nil];
+        [issuesList setRowHeight:60];
 
-        [issuesList addTableColumn:col];
+        [issuesList setAlternatingRowBackgroundColors:
+                [
+                    [CPColor colorWithRed:250/255 green:250/255 blue:250/255 alpha:1], 
+                    [CPColor colorWithRed:245/255 green:247/255 blue:247/255 alpha:1]
+                ]
+        ];
+        [issuesList setUsesAlternatingRowBackgroundColors:YES];
+
+        [issuesList setGridColor:[CPColor colorWithRed:218/255 green:225/255 blue:230/255 alpha:1]];
+        [issuesList setGridStyleMask:CPTableViewSolidHorizontalGridLineMask];
+
+        [issuesList setSelectionHighlightColor:[CPColor colorWithRed:216/255 green:230/255 blue:240/255 alpha:1]];
 
         [scrollView setDocumentView:issuesList];
+        [scrollView setHasHorizontalScroller:NO];
+        [scrollView setAutohidesScrollers:YES];
+        [issuesList addTableColumn:col];
+
+        [issuesList sizeLastColumnToFit];
+        
+
     }
 
     var issues = [activeRepository valueForKey:visisbleIssuesKey];
