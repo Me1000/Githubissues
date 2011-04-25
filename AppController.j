@@ -18,15 +18,18 @@
 @import "CPWindow+animations.j"
 @import "ISGithubAPIController.j"
 @import "ISWindow.j"
+@import "EKActivityIndicatorView.j"
 
 
 @implementation AppController : CPObject
 {
     @outlet CPWindow    theWindow;
-    @outlet ISToolbar   toolbar;
+    @outlet ISToolbar   toolbar @accessors(readonly);
     @outlet ISSideBar   sidebar;
     @outlet CPView      mainContentView;
     @outlet CPSplitView verticalSplitView;
+
+    @outlet ISRepositoriesController reposController;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -38,13 +41,20 @@
     // try to login
     var defaults = [CPUserDefaults standardUserDefaults],
         user = [defaults objectForKey:"username"],
-        key = [defaults objectForKey:"apikey"],
+        pass = [defaults objectForKey:"password"],
+        sortedRepos = [defaults objectForKey:"sortedRepos"],
         apicontroller = [ISGithubAPIController sharedController];
 
-    [apicontroller setUsername:user];
-    [apicontroller setApiKey:key];
+    if (user && pass)
+    {
+        [apicontroller setUsername:user];
+        [apicontroller setPassword:pass];
+        [apicontroller authenticateWithCallback:nil];
+    }
 
-    [apicontroller authenticateWithCallback:nil];
+    [reposController setSortedRepos:sortedRepos];
+
+    // FIX ME: parse the url arguments
 }
 
 - (void)awakeFromCib
@@ -92,11 +102,8 @@
 
 - (IBAction)newRepo:(id)aSender
 {
-    var repoWindow = [ISNewRepoWindow sharedWindow];
-    [repoWindow setAnimationLocation:"15% 0%"];
-    [repoWindow setAnimationLength:"170"];
-    [repoWindow orderFontWithAnimation:aSender];
-    [repoWindow makeKeyWindow];
+    [[ISNewRepoWindow sharedWindow] showWindow:aSender];
+;
 }
 
 

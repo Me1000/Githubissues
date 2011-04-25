@@ -30,6 +30,8 @@
 
             CPView        shadowOverlayViewTop;
             CPView        shadowOverlayViewRight;
+
+    @outlet ISRepositoriesController repoController;
 }
 
 - (void)awakeFromCib
@@ -81,12 +83,10 @@
                                                                         ]
                                                                forKeys: [CPSourceListGradient, CPSourceListTopLineColor, CPSourceListBottomLineColor]]
 
-    var controller = [ISRepositoriesController sharedController];
+    [sourceList setDataSource:repoController];
+    [sourceList setDelegate:repoController];
 
-    [sourceList setDataSource:controller];
-    [sourceList setDelegate:controller];
-
-    [controller setSourceList:sourceList];
+    [repoController setSourceList:sourceList];
 
     [sourceListScrollView setDocumentView:sourceList];
     [sourceList setSelectionGradientColors:sourceListSelectionColor];
@@ -109,7 +109,7 @@
     [filterList setRowHeight:31];
 
     // FIXME Give this some other data.
-    [filterList setDataSource:[ISRepositoriesController sharedController]];
+    [filterList setDataSource:repoController];
     [filterListScrollView setDocumentView:filterList];
 
     var scroller = [[ISScroller alloc] initWithFrame:CGRectMake(0,0,10,10)];

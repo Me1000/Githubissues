@@ -81,6 +81,10 @@ var octocatImage = nil;
         [accountNameField setStringValue:[githubController username]];
         [avatarView setImage:[githubController userThumbnailImage]];
         [loginButton setTitle:"Logout"];
+
+        var defaults = [CPUserDefaults standardUserDefaults];
+        [defaults setObject:[githubController username] forKey:"username"];
+        [defaults setObject:[githubController username] forKey:"password"];
     }
     else
     {

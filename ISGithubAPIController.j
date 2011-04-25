@@ -24,6 +24,14 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
         [controller promptForAuthentication:nil];
 }
 
+
+// This function creates and returns a string for which to
+// make an API call
+var APIURLWithString = function(/*CPString*/aString)
+{
+//    if ()
+}
+
 @implementation ISGithubAPIController : CPObject
 {
     CPDictionary    repositoriesByIdentifier @accessors(readonly);
@@ -33,7 +41,7 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
     CPString emailAddressHashed @accessors;
 
     // When we don't use OAuth we use the APIKey
-    CPString apiKey @accessors;
+    CPString password @accessors;
 
     CPString oauthAccessToken @accessors;
 
@@ -102,45 +110,56 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
     [[CPUserSessionManager defaultManager] setStatus:CPUserSessionLoggedOutStatus];
 }
 
-- (CPString)_credentialsString
+/*!
+    We use this to construct the API url since it can be complicated at times.
+*/
+- (CPString)_urlForAPICall:(CPString)aCall
 {
-    var authString = "?app_id=280issues";
-    if ([self isAuthenticated])
+    var isAuthenticated = [self isAuthenticated],
+        urlForCall = "",
+        startingArgument = aCall.indexOf("?") === CPNotFound ? "?" : "&";
+
+    if (window.location && window.location.protocol === "file:")
     {
-        if (oauthAccessToken)
-            authString += "&access_token="+encodeURIComponent(oauthAccessToken);
+        if (isAuthenticated)
+            urlForCall += "https://" + username + ":" + password + "@api.github.com/" + aCall;
         else
-            authString += "&login="+encodeURIComponent(username)+"&token="+encodeURIComponent(apiKey);
+            urlForCall += "https://api.github.com/" + aCall;
+    }
+    else
+    {
+        if (isAuthenticated && oauthAccessToken)
+        {
+            urlForCall += "/github/" + aCall + + startingArgument +"access_token=" + oauthAccessToken;
+            startingArgument = "&";
+        }
     }
 
-    return authString;
+    urlForCall += startingArgument + "app_id=280issues";
+
+    return urlForCall;
 }
 
 - (void)authenticateWithCallback:(Function)aCallback
 {
     var request = new CFHTTPRequest();
 
+    //github.com/users/technoweenie.json
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
-    if (oauthAccessToken)
-        request.open("GET", BASE_API + "user/show?access_token=" + encodeURIComponent(oauthAccessToken), true);
-    else
-        request.open("GET", BASE_API + "user/show?login=" + encodeURIComponent(username) + "&token=" + encodeURIComponent(apiKey), true);
+    // FIX ME: this URL is wrong.
+    request.open("GET", [self _urlForAPICall:"users/"+username+".json"], true);
 
     request.oncomplete = function()
     {
         if (request.success())
         {
-            var response = JSON.parse(request.responseText()).user;
+            var response = JSON.parse(request.responseText());
 
             username = response.login;
             emailAddress = response.email;
             emailAddressHashed = response.gravatar_id || (response.email ? hex_md5(emailAddress) : "");
-
-            var defaults = [CPUserDefaults standardUserDefaults];
-            [defaults setObject:username forKey:"username"];
-            [defaults setObject:apiKey forKey:"apikey"];
 
             if (emailAddressHashed)
             {
@@ -185,14 +204,13 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
         //var loginWindow = [LoginWindow sharedLoginWindow];
         //[loginWindow makeKeyAndOrderFront:self];
 
-        var user = prompt("username: ");
-        var token = prompt("API Key: ");
-
-
+        // FIX ME: make this awesome
+        var user = prompt("Username: ");
+        var pass = prompt("Password: ");
 
             var githubController = self;
             [githubController setUsername:user];
-            [githubController setApiKey:token];
+            [githubController setPassword:pass];
             
             [githubController authenticateWithCallback:function(success)
             {
@@ -217,34 +235,33 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
 
 - (void)loadRepositoryWithIdentifier:(CPString)anIdentifier callback:(Function)aCallback
 {
-    var parts = anIdentifier.split("/");
-    if ([parts count] > 2)
-        anIdentifier = parts.slice(0, 2).join("/");
-
     var request = new CFHTTPRequest();
 
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
-
-    request.open("GET", BASE_API+"repos/"+anIdentifier+".json"+[self _credentialsString], true);
+    request.open("GET", [self _urlForAPICall:"repos/"+anIdentifier+".json"], true);
 
     request.oncomplete = function()
     {
-        var data = nil;
+        var data = nil,
+            newRepo = nil;
+
         if (request.success())
         {
             try {
 
                 data = JSON.parse(request.responseText());
 
-                var newRepo = [[ISRepository alloc] init];
+                newRepo = [repositoriesByIdentifier objectForKey:anIdentifier] || [[ISRepository alloc] init];
+console.log(newRepo, [newRepo numberOfOpenIssues]);
                 [newRepo setName:data.name];
                 [newRepo setIdentifier:anIdentifier];
                 [newRepo setIsPrivate:data.private];
-                [newRepo setOpenIssues:data.open_issues];
+                [newRepo setNumberOfOpenIssues:data.open_issues];
                 [newRepo setIssuesAssignedToCurrentUser:0];
 
-                [repositoriesByIdentifier setObject:newRepo forKey:anIdentifier];
+                if (![repositoriesByIdentifier objectForKey:anIdentifier])
+                    [repositoriesByIdentifier setObject:newRepo forKey:anIdentifier];
             }
             catch (e) {
                 CPLog.error("Unable to load repositority with identifier: "+anIdentifier+" -- "+e);
@@ -269,7 +286,8 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
 
     var request = new CFHTTPRequest();
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    request.open("GET", BASE_API+"repos/"+[aRepo identifier]+"/labels.json"+[self _credentialsString], true);
+
+    request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/labels.json"], true);
 
     request.oncomplete = function()
     {
@@ -282,7 +300,7 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
             }
             catch (e)
             {
-                CPLog.error(@"Unable to load labels for issue: " + anIssue + @" -- " + e);
+                CPLog.error("Unable to load labels for issue: " + anIssue + @" -- " + e);
             }
         }
 
@@ -290,7 +308,126 @@ CFHTTPRequest.AuthenticationDelegate = function(aRequest)
         [[CPRunLoop currentRunLoop] performSelectors];
     };
 
-    request.send(@"");
+    request.send("");
 }
+
+/*!
+    Loads issues for a repo.
+    The key is given to load open/closed issues
+*/
+- (void)loadIssuesForRepository:(ISRepository)aRepo state:(CPString)stateKey callback:(id)aCallback
+{
+    /*
+        GET /repos/:user/:repo/issues.json
+        ?milestone = (Fixnum)
+        ?sort = (String)
+        ?direction = (String)
+        ?state = open, closed, default: open
+        ?assignee = (String)
+        ?mentioned = (String)
+        ?labels = (String)
+
+        With version 3 of the API we can only get 100 issues at a time...
+    */
+
+    // FIX ME WE NEED TO DO THIS FOR CLOSED ISSUES TOO :(
+    var numberOfIssues = [aRepo numberOfOpenIssues],
+        page = 1,
+        requests = [];
+
+    while((page * 100) <= numberOfIssues + 100)
+    {
+        (function(){
+        var request = new CFHTTPRequest();
+        
+        request.setRequestHeader("accept", "application/vnd.github.v3+json");
+        
+        request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
+        
+        request.oncomplete = function()
+        {
+            if (request.success())
+            {
+                try
+                {
+                    request.MYData = JSON.parse(request.responseText());
+                }
+                catch (e)
+                {
+                    CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
+                }
+            }
+
+            // Check to make sure if all requests are done.
+            // If this test passes on all object one hasn't completed yet.
+            // 4 === CFHTTPRequest.CompleteState everything less than that is incomplete
+            if ([requests indexOfObjectPassingTest:function(object, index){return object.readyState() < 4}] !== CPNotFound)
+            {
+                for (var i = 0; i < requests.length; i++)
+                    console.log("-1 status:",requests[0].readyState());
+                return;
+            }
+            else
+            {
+                for (var i = 0; i < requests.length; i++)
+                    console.log("status",requests[0].readyState());
+
+                var concatIssues = [];
+
+                for (var i = 0; i < requests.length; i++)
+                    [concatIssues addObjectsFromArray:requests[i].MYData];
+
+                [aRepo setValue:concatIssues forKey:stateKey];
+console.log(concatIssues.length, concatIssues);
+                if (aCallback)
+                    aCallback(aRepo, requests);
+
+                [[CPRunLoop currentRunLoop] performSelectors];
+            }
+        };
+        
+        request.send("");
+
+        requests.push(request);
+        console.log("page:", page)
+        page++;
+        })();
+    }
+
+
+
+    // There is a chance the user will want the issues in the other open/closed state
+    // so if they don't exist we'll go ahead and download those too.
+
+/*    var secStateKey = stateKey === "open" ? "open" : "closed";
+
+    if ([aRepo valueForKey:secStateKey])
+        return;
+
+    var secRequest = new CFHTTPRequest();
+
+    secRequest.setRequestHeader("accept", "application/vnd.github.v3+json");
+    secRequest.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?state="+secStateKey], true);
+
+    secRequest.oncomplete = function()
+    {
+        var secData = nil;
+        if (request.success())
+        {
+            try
+            {
+                secData = JSON.parse(secRequest.responseText());
+            }
+            catch (e)
+            {
+                CPLog.error("Unable to load issues: " + anIssue + @" -- " + e);
+            }
+        }
+
+        [aRepo setValue:secData forKey:secStateKey];
+    };
+
+    request.send("");
+}*/
 
 @end

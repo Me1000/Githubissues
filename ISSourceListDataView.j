@@ -105,7 +105,7 @@ var ISSourceLockImage       = nil,
     if ([aValue isKindOfClass:ISRepository])
     {
         text = [aValue identifier];
-        number = [aValue openIssues];
+        number = [aValue numberOfOpenIssues];
         specialNumber = [aValue issuesAssignedToCurrentUser];
         if ([aValue isPrivate])
         {

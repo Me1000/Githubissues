@@ -20,7 +20,9 @@
     @outlet CPButton closedIssuesButton;
 
 
-            BOOL openIssuesSelected;
+            BOOL openIssuesSelected @accessors;
+
+    @outlet  id      visisbleIssuesSelectionDelegate;
 }
 - (void)awakeFromCib
 {
@@ -74,6 +76,7 @@
 
 
     openIssuesSelected = (sender === openIssuesButton);
+    [visisbleIssuesSelectionDelegate visisbleIssuesSelectionDidChange:openIssuesSelected];
 /*
     var inactive = sender === openIssuesButton ? openIssuesButton : closedIssuesButton;
 

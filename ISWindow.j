@@ -6,6 +6,7 @@
 */
 
 var WindowBackground = nil,
+    DetachedWindowBackground = nil,
     GreenButtonColor = nil,
     GreenButtonDownColor = nil,
     RedButtonColor = nil,
@@ -17,6 +18,20 @@ var WindowBackground = nil,
 {
     WindowBackground = [CPColor colorWithPatternImage:[[CPNinePartImage alloc] initWithImageSlices:[
         resourcesImage("windows/popoverwindow-0.png", 65, 53),
+        resourcesImage("windows/popoverwindow-1.png", 17, 53),
+        resourcesImage("windows/popoverwindow-2.png", 44, 53),
+
+        resourcesImage("windows/popoverwindow-3.png", 65, 48),
+        resourcesImage("windows/popoverwindow-4.png", 17, 48),
+        resourcesImage("windows/popoverwindow-5.png", 44, 48),
+
+        resourcesImage("windows/popoverwindow-6.png", 65, 62),
+        resourcesImage("windows/popoverwindow-7.png", 17, 62),
+        resourcesImage("windows/popoverwindow-8.png", 44, 62)
+    ]]];
+
+    DetachedWindowBackground = [CPColor colorWithPatternImage:[[CPNinePartImage alloc] initWithImageSlices:[
+        resourcesImage("windows/popoverwindow-0-no-spike.png", 65, 53),
         resourcesImage("windows/popoverwindow-1.png", 17, 53),
         resourcesImage("windows/popoverwindow-2.png", 44, 53),
 
@@ -96,6 +111,8 @@ var SharedNewRepoWindow = nil;
 
 - (void)awakeFromCib
 {
+    [self setDelegate:self];
+
     [super awakeFromCib];
 
     SharedNewRepoWindow = self;
@@ -130,11 +147,41 @@ var SharedNewRepoWindow = nil;
 
 }
 
+- (void)showWindow:(id)sender
+{
+    var pt = [sender bounds],
+        pt = [sender  convertRect:pt toView:nil],
+        origin = CGPointMake(CGRectGetMidX(pt), CGRectGetMidY(pt));
+
+    // offset for the spiky thing
+    origin.x -= 52;
+
+    [self setFrameOrigin:origin];
+
+    [[self contentView] setBackgroundColor:WindowBackground];
+
+    [self setAnimationLocation:"15% 0%"];
+    [self setAnimationLength:"170"];
+    [self orderFontWithAnimation:sender];
+    [self makeKeyWindow];
+}
+
+- (void)windowDidMove:(CPNotification)aNote
+{
+    [[self contentView] setBackgroundColor:DetachedWindowBackground];
+}
+
 - (@action)addRepo:(id)sender
 {
-    var callback = function(aRepo, request) {
+    var callback = function(aRepo, request)
+    {
         [repoController addRepository:aRepo select:YES];
         [self orderOutWithAnimation:sender];
+
+        // wait for the window to disapear before removing the text.
+        window.setTimeout(function(){
+            [repoNameField setStringValue:""];
+        },230);
     }
 
     [[ISGithubAPIController sharedController] loadRepositoryWithIdentifier:[repoNameField stringValue] callback:callback];
@@ -147,9 +194,21 @@ var SharedNewRepoWindow = nil;
 
 - (void)sendEvent:(CPEvent)anEvent
 {
-console.log("test")
-    if ([anEvent type] === CPKeyUp && [anEvent keyCode] === CPTabKeyCode)
-        [self makeFirstResponder:repoNameField];
+    if ([anEvent type] === CPKeyUp)
+    {
+        if ([anEvent keyCode] === CPEscapeKeyCode)
+            [self cancel:self];
+        else if ([self firstResponder] !== repoNameField)
+        {
+            [self makeFirstResponder:repoNameField];
+
+            // FIX ME: this should start typing... instead we get a stupid DOM delay (I think)
+            // which just causes this to select the text and the user loses the first couple letters
+            [super sendEvent:anEvent];
+        }
+        else
+            [super sendEvent:anEvent];
+    }
     else
         [super sendEvent:anEvent];
 }
