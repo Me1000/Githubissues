@@ -253,10 +253,10 @@ var APIURLWithString = function(/*CPString*/aString)
                 data = JSON.parse(request.responseText());
 
                 newRepo = [repositoriesByIdentifier objectForKey:anIdentifier] || [[ISRepository alloc] init];
-console.log(newRepo, [newRepo numberOfOpenIssues]);
+
                 [newRepo setName:data.name];
                 [newRepo setIdentifier:anIdentifier];
-                [newRepo setIsPrivate:data.private];
+                [newRepo setIsPrivate:data["private"]];
                 [newRepo setNumberOfOpenIssues:data.open_issues];
                 [newRepo setIssuesAssignedToCurrentUser:0];
 
@@ -362,11 +362,7 @@ console.log(newRepo, [newRepo numberOfOpenIssues]);
             // If this test passes on all object one hasn't completed yet.
             // 4 === CFHTTPRequest.CompleteState everything less than that is incomplete
             if ([requests indexOfObjectPassingTest:function(object, index){return object.readyState() < 4}] !== CPNotFound)
-            {
-                for (var i = 0; i < requests.length; i++)
-                    console.log("-1 status:",requests[0].readyState());
                 return;
-            }
             else
             {
                 for (var i = 0; i < requests.length; i++)
@@ -378,7 +374,7 @@ console.log(newRepo, [newRepo numberOfOpenIssues]);
                     [concatIssues addObjectsFromArray:requests[i].MYData];
 
                 [aRepo setValue:concatIssues forKey:stateKey];
-console.log(concatIssues.length, concatIssues);
+
                 if (aCallback)
                     aCallback(aRepo, requests);
 

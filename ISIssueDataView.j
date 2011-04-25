@@ -35,17 +35,11 @@
     [commentsIcon  setValue:offset forThemeAttribute:"text-shadow-offset"];
     [commentsField setValue:offset forThemeAttribute:"text-shadow-offset"];
 
+    // Size to fit them here that way we don't have to do it in setObjectValue: 
+    // should make performance better while scrolling.
+
     [openedOnLabel sizeToFit];
     [updatedLabel sizeToFit];
-    [updatedField sizeToFit];
-}
-
-- (id)initWithFrame:(CGRect)aRect
-{
-    self = [super initWithFrame:aRect];
-
-
-    return self;
 }
 
 - (void)setObjectValue:(id)aValue
@@ -64,17 +58,17 @@
 
     point.x = CGRectGetMaxX([openedOnLabel frame]) + 2;
     [openedOnField setFrameOrigin:point];
+    [openedOnField setStringValue:aValue.created_at];
     [openedOnField sizeToFit];
 
     point.x = CGRectGetMaxX([openedOnField frame]) + 2;
     [updatedLabel setFrameOrigin:point];
-    [updatedLabel sizeToFit];
 
     point.x = CGRectGetMaxX([updatedLabel frame]) + 2;
     [updatedField setFrameOrigin:point];
+    [updatedField setStringValue:aValue.updated_at];
+    [updatedField sizeToFit];
 
-//    [openedOnField setStringValue:aValue.user.name];
-// [updatedLabel setStringValue];
     [commentsField setStringValue:aValue.comments + " comments"];
     [avatarView setImage:[[CPImage alloc] initByReferencingFile:aValue.user.gravatar_url size:CGSizeMake(30, 30)]];
 }

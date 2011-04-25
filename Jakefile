@@ -70,8 +70,12 @@ task ("run-release", ["release"], function()
 
 task ("deploy", ["release"], function()
 {
+    FILE.mkdirs(FILE.join("Build", "Press", "GithubIssues"));
+    OS.system(["press", "-f", FILE.join("Build", "Release", "GithubIssues"), FILE.join("Build", "Press", "GithubIssues")]);
+
     FILE.mkdirs(FILE.join("Build", "Deployment", "GithubIssues"));
-    OS.system(["press", "-f", FILE.join("Build", "Release", "GithubIssues"), FILE.join("Build", "Deployment", "GithubIssues")]);
+    OS.system(["flatten", "-f", "--verbose", "--split", "3", "-c", "closure-compiler", FILE.join("Build", "Press", "GithubIssues"), FILE.join("Build", "Deployment", "GithubIssues")]);
+
     printResults("Deployment")
 });
 
