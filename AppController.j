@@ -20,7 +20,7 @@
 @import "ISWindow.j"
 @import "EKActivityIndicatorView.j"
 @import "ISIssueDataView.j"
-
+@import "ISModel.j"
 
 @implementation AppController : CPObject
 {
@@ -38,12 +38,10 @@
     // This is called when the application is done loading.
     [CPMenu setMenuBarVisible:NO];
 
-
     // try to login
     var defaults = [CPUserDefaults standardUserDefaults],
         user = [defaults objectForKey:"username"],
         pass = [defaults objectForKey:"password"],
-        sortedRepos = [defaults objectForKey:"sortedRepos"],
         apicontroller = [ISGithubAPIController sharedController];
 
     if (user && pass)
@@ -52,8 +50,6 @@
         [apicontroller setPassword:pass];
         [apicontroller authenticateWithCallback:nil];
     }
-
-    [reposController setSortedRepos:sortedRepos];
 
     // FIX ME: parse the url arguments
 }

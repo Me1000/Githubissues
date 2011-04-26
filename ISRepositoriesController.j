@@ -11,37 +11,21 @@
     This also acts as the data source for the source list.
 */
 
-var TEST_DATA = [
-        { 'name': '280north/something',     'is_private': YES,  'mine': 9,  'open': 31 },
-        { 'name': '280north/issues',        'is_private': NO,   'mine': 9,  'open': 29 },
-        { 'name': '280north/cappuccino',    'is_private': NO,   'mine': 15, 'open': 27 },
-        { 'name': 'janl/mustache',          'is_private': NO,   'mine': 0,  'open': 18 },
-        { 'name': 'joyent/node',            'is_private': NO,   'mine': 0,  'open': 21 }
-    ];
-
-
 
 @implementation ISRepositoriesController : CPObject
 {
     @outlet ISIssuesController issuesController;
 
-    CPArray sortedRepos;
+    // Temporary outlet. Will soon be replaced with a content binding.
+    @outlet ISModel model @accessors;
+
     CPTableView sourceList @accessors;
     CPTableView filterlist @accessors;
 }
 
-- (id)init
-{
-    self = [super init];
-
-    sortedRepos = [];
-
-    return self;
-}
-
 - (void)addRepo:(ISRepository)aRepo
 {
-    
+
 }
 
 /*
@@ -49,25 +33,25 @@ var TEST_DATA = [
 */
 - (void)removeRepo:(id)sender
 {
-    var repo = sortedRepos[[[sortedRepos selectedRowIndexes] firstIndex]];
+    var repo = [model repositories][[[sourceList selectedRowIndexes] firstIndex]];
 
     [repo removeObserver:self forKeyPath:"isPrivate"];
     [repo removeObserver:self forKeyPath:"numberOfOpenIssues"];
     [repo removeObserver:self forKeyPath:"issuesAssignedToCurrentUser"];
 
-    [sortedRepos removeObject:repo];
+    [[model repositories] removeObject:repo];
 
     [sourceList reloadData];
 }
 
 - (void)setSortedRepos:(CPArray)newRepos
 {
-    sortedRepos = newRepos || [];
+    [model setRepositories:newRepos || []];
 
     // update everything dude...
-    for (var i = 0, controller = [ISGithubAPIController sharedController]; i < sortedRepos.length; i++)
+    for (var i = 0, controller = [ISGithubAPIController sharedController]; i < [model repositories].length; i++)
     {
-        var repo = sortedRepos[i];
+        var repo = [model repositories][i];
 
         [[controller repositoriesByIdentifier] setObject:repo forKey:[repo identifier]];
 
@@ -84,19 +68,19 @@ var TEST_DATA = [
 
 - (void)addRepository:(ISRepository)aRepo select:(BOOL)shouldSelect
 {
-    if (![sortedRepos containsObject:aRepo])
+    if (![[model repositories] containsObject:aRepo])
     {
         [aRepo addObserver:self forKeyPath:"is_private" options:nil context:nil];
         [aRepo addObserver:self forKeyPath:"numberOfOpenIssues" options:nil context:nil];
         [aRepo addObserver:self forKeyPath:"issuesAssignedToCurrentUser" options:nil context:nil];
 
-        [sortedRepos addObject:aRepo];
+        [[model repositories] addObject:aRepo];
         [sourceList reloadData];
     }
 
     if (shouldSelect)
     {
-        [sourceList selectRowIndexes:[CPIndexSet indexSetWithIndex:([sortedRepos count] -1)] byExtendingSelection:NO];
+        [sourceList selectRowIndexes:[CPIndexSet indexSetWithIndex:([[model repositories] count] -1)] byExtendingSelection:NO];
 
         // FIX ME: this should be required, but for someone must have changed it in CPTableView
         //[self tableViewSelectionDidChange:nil];
@@ -104,7 +88,7 @@ var TEST_DATA = [
 
     // update the defaults
     var defaults = [CPUserDefaults standardUserDefaults];
-    [defaults setObject:sortedRepos forKey:"sortedRepos"];
+    [defaults setObject:[model repositories] forKey:"[model repositories]"];
 }
 
 - (void)observeValueForKeyPath:(id)path ofObject:(id)obj change:(id)change context:(id)context
@@ -115,17 +99,17 @@ console.log("changes");
 
 - (int)numberOfRowsInTableView:(CPTableView)aTable
 {
-    return [sortedRepos count];
+    return [[model repositories] count];
 }
 
 - (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
-    return sortedRepos[aRow];
+    return [model repositories][aRow];
 }
 
 - (void)tableViewSelectionDidChange:(CPTableView)aTable
 {
-    [issuesController setActiveRepository:sortedRepos[[[sourceList selectedRowIndexes] firstIndex]]];
+    [issuesController setActiveRepository:[model repositories][[[sourceList selectedRowIndexes] firstIndex]]];
 }
 
 @end
