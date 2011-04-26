@@ -214,3 +214,16 @@ var SharedNewRepoWindow = nil;
 }
 
 @end
+
+@implementation ISNewIssueWindow : ISWindow
+{
+    @outlet CPTextField titleField;
+    @outlet CPPopUpButton repoField;
+    @outlet LPMultiLineTextField bodyField;
+
+    @outlet CPButton saveButton;
+    @outlet CPButton cancelButton;
+    @outlet CPButton previewButton;
+}
+
+@end
