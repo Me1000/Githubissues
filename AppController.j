@@ -101,7 +101,7 @@
 }
 
 
-- (IBAction)newRepo:(id)aSender
+- (@action)newRepo:(id)aSender
 {
     [[ISNewRepoWindow sharedWindow] showWindow:aSender];
 ;

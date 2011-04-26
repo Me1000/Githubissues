@@ -10,7 +10,9 @@ var WindowBackground = nil,
     GreenButtonColor = nil,
     GreenButtonDownColor = nil,
     RedButtonColor = nil,
-    RedButtonDownColor = nil;
+    RedButtonDownColor = nil,
+    GreenButtonDisabledColor = nil,
+    RedButtonDisabledColor = nil;
 
 @implementation ISWindow : CPWindow
 
@@ -66,6 +68,18 @@ var WindowBackground = nil,
         resourcesImage("red-button-down-0.png", 13, 23),
         resourcesImage("red-button-down-1.png", 2, 23),
         resourcesImage("red-button-down-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    RedButtonDisabledColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("red-button-disabled-0.png", 13, 23),
+        resourcesImage("red-button-disabled-1.png", 2, 23),
+        resourcesImage("red-button-disabled-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    GreenButtonDisabledColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("green-button-disabled-0.png", 13, 23),
+        resourcesImage("green-button-disabled-1.png", 2, 23),
+        resourcesImage("green-button-disabled-2.png", 13, 23)
     ] isVertical:NO]];
 }
 
@@ -134,15 +148,22 @@ var SharedNewRepoWindow = nil;
 
     [submitButton setValue:GreenButtonColor forThemeAttribute:"bezel-color"];
     [submitButton setValue:GreenButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
+
+    [submitButton setValue:[CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1] forThemeAttribute:"text-color" inState:CPThemeStateDisabled];
+    [submitButton setValue:[CPColor colorWithRed:1 green:1 blue:1 alpha:.1] forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
+    [submitButton setValue:GreenButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
     [submitButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
     [submitButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
 
     [cancelButton setValue:RedButtonColor forThemeAttribute:"bezel-color"];
     [cancelButton setValue:RedButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
+//    [cancelButton setValue:RedButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
     [cancelButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
     [cancelButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
+
+    [repoNameField setDelegate:self];
     
 
 }
@@ -164,6 +185,15 @@ var SharedNewRepoWindow = nil;
     [self setAnimationLength:"170"];
     [self orderFontWithAnimation:sender];
     [self makeKeyWindow];
+
+    [submitButton setEnabled:NO];
+}
+
+- (void)controlTextDidChange:(CPNotification)aNote
+{
+    var slashPosition =  [repoNameField stringValue].indexOf("/"),
+        enabled = ([[repoNameField stringValue] length] > 2 && slashPosition !== CPNotFound && slashPosition !== 0 && slashPosition !== [[repoNameField stringValue] length] -1);
+    [submitButton setEnabled:enabled];
 }
 
 - (void)windowDidMove:(CPNotification)aNote

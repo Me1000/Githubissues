@@ -84,7 +84,7 @@ var octocatImage = nil;
 
         var defaults = [CPUserDefaults standardUserDefaults];
         [defaults setObject:[githubController username] forKey:"username"];
-        [defaults setObject:[githubController username] forKey:"password"];
+        [defaults setObject:[githubController password] forKey:"password"];
     }
     else
     {
