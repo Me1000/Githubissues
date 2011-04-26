@@ -148,6 +148,10 @@ var APIURLWithString = function(/*CPString*/aString)
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
+    // FIX ME: github is broked
+    if (window.location && window.location.protocol === "file:" && username && password)
+        request.setRequestHeader("Authorization", "Basic "+CFData.encodeBase64String(username +":" + password));
+
     // FIX ME: this URL is wrong.
     request.open("GET", [self _urlForAPICall:"user.json"], true);
 
