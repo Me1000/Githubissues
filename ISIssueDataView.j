@@ -35,7 +35,7 @@
     [commentsIcon  setValue:offset forThemeAttribute:"text-shadow-offset"];
     [commentsField setValue:offset forThemeAttribute:"text-shadow-offset"];
 
-    // Size to fit them here that way we don't have to do it in setObjectValue: 
+    // Size to fit them here that way we don't have to do it in setObjectValue:
     // should make performance better while scrolling.
 
     [openedOnLabel sizeToFit];
@@ -46,12 +46,12 @@
 {
     [avatarView setImage:resourcesImage("gravatar-140.png", 30, 30)];
 
-    [titleField setStringValue:"#"+[aValue objectForKey:"number"]+" "+[aValue objectForKey:"title"]];
+    [titleField setStringValue:"#" + [aValue objectForKey:"number"] +" " + [aValue objectForKey:"title"]];
     [titleField sizeToFit];
 
-    var name = [[aValue objectForKey:"user"] objectForKey:"name"] !== [CPNull null] ? [[aValue objectForKey:"user"] objectForKey:"name"] : [[aValue objectForKey:"user"] objectForKey:"login"];
+    var user = [aValue objectForKey:"user"];
 
-    [userField setStringValue:name];
+    [userField setStringValue:[user objectForKey:"name"] || [user objectForKey:"login"]];
     [userField sizeToFit];
 
     var point = [openedOnLabel frame].origin;
@@ -72,7 +72,7 @@
     [updatedField sizeToFit];
 
     [commentsField setStringValue:[aValue objectForKey:"comments"] + " comments"];
-    [avatarView setImage:[[CPImage alloc] initByReferencingFile:[[aValue objectForKey:"user"] objectForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
+    [avatarView setImage:[[CPImage alloc] initByReferencingFile:[user objectForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
 }
 
 - (void)encodeWithCoder:(CPCoder)aCoder

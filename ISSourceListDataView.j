@@ -36,6 +36,7 @@ var ISSourceLockImage       = nil,
 
     CPFont   cachedFont;
 }
+
 - (id)initWithFrame:(CGRect)aRect
 {
     self = [super initWithFrame:aRect];
@@ -121,7 +122,7 @@ var ISSourceLockImage       = nil,
             selectedImage = ISSourceLockImageActive;
         }
     }
-    else
+    else if (aValue)
     {
         text = aValue.text;
         number = aValue.number;

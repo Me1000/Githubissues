@@ -19,7 +19,7 @@
 @import "ISGithubAPIController.j"
 @import "ISWindow.j"
 @import "ISIssueDataView.j"
-
+@import "ISModel.j"
 
 @implementation AppController : CPObject
 {
@@ -30,6 +30,7 @@
     @outlet CPSplitView verticalSplitView;
 
     @outlet ISRepositoriesController reposController;
+    @outlet ISModel     model @accessors;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -37,12 +38,10 @@
     // This is called when the application is done loading.
     [CPMenu setMenuBarVisible:NO];
 
-
     // try to login
     var defaults = [CPUserDefaults standardUserDefaults],
         user = [defaults objectForKey:"username"],
         pass = [defaults objectForKey:"password"],
-        sortedRepos = [defaults objectForKey:"sortedRepos"],
         apicontroller = [ISGithubAPIController sharedController];
 
     if (user && pass)
@@ -52,9 +51,10 @@
         [apicontroller authenticateWithCallback:nil];
     }
 
-    [reposController setSortedRepos:sortedRepos];
-
     // FIX ME: parse the url arguments
+
+    // Load any saved settings.
+    [model load];
 }
 
 - (void)awakeFromCib
@@ -103,7 +103,6 @@
 - (@action)newRepo:(id)aSender
 {
     [[ISNewRepoWindow sharedWindow] showWindow:aSender];
-;
 }
 
 

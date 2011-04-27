@@ -69,6 +69,11 @@
     [col setDataView:[[ISSourceListDataView alloc] initWithFrame:CGRectMakeZero()]];
 
     [sourceList addTableColumn:col];
+    [repoController setSourceList:sourceList];
+    // Note: at this time awakeFromCib might not have yet been called on repoController,
+    // so there might be no data yet.
+    [col bind:CPValueBinding toObject:repoController withKeyPath:"arrangedObjects.sidebarRepresentation" options:nil];
+
     [sourceList sizeLastColumnToFit];
     [sourceList setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
     [sourceList setHeaderView:nil];
@@ -85,8 +90,6 @@
 
     [sourceList setDataSource:repoController];
     [sourceList setDelegate:repoController];
-
-    [repoController setSourceList:sourceList];
 
     [sourceListScrollView setDocumentView:sourceList];
     [sourceList setSelectionGradientColors:sourceListSelectionColor];

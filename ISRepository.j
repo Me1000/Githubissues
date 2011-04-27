@@ -29,6 +29,27 @@
     CPArray     closed @accessors;
 }
 
++ (CPSet)keyPathsForValuesAffectingSiderbarRepresentation
+{
+    return [CPSet setWithObjects:"name", "isPrivate", "numberOfOpenIssues", "issuesAssignedToCurrentUser"];
+}
+
+/*!
+    This is a proxy used to be able to bind the main repository sidebar column to a keypath which properly
+    notifies when any of the values in the compound dataview change.
+*/
+- (ISRepository)sidebarRepresentation
+{
+    return self;
+}
+
+- (void)load
+{
+    var controller = [ISGithubAPIController sharedController];
+    [[controller repositoriesByIdentifier] setObject:self forKey:[self identifier]];
+    [controller loadRepositoryWithIdentifier:[self identifier] callback:nil];
+}
+
 - (id)initWithCoder:(CPCoder)aCoder
 {
     self = [super init];
