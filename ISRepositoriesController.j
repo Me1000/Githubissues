@@ -40,6 +40,14 @@
     [model save];
 }
 
+- (void)remove:(id)sender
+{
+    [super remove:sender];
+
+    // TODO Do this automatically somehow.
+    [model save];
+}
+
 - (void)tableViewSelectionDidChange:(CPTableView)aTable
 {
     // TODO Replace with a binding to selectionIndexes.
