@@ -245,7 +245,10 @@ var SharedNewRepoWindow = nil;
     else
     {
         if (!CGSizeEqualToSize(currentFrame.size, CGSizeMake(381,161)))
+        {
+            [scrollview removeFromSuperview];
             [self setFrame:CGRectMake(currentFrame.origin.x, currentFrame.origin.y, 381,161) display:YES animate:YES];
+        }
     }
 }
 
