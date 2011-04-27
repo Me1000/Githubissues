@@ -46,10 +46,12 @@
 {
     [avatarView setImage:resourcesImage("gravatar-140.png", 30, 30)];
 
-    [titleField setStringValue:"#"+aValue.number+" "+aValue.title];
+    [titleField setStringValue:"#"+[aValue objectForKey:"number"]+" "+[aValue objectForKey:"title"]];
     [titleField sizeToFit];
 
-    [userField setStringValue:aValue.user.name || aValue.user.login];
+    var name = [[aValue objectForKey:"user"] objectForKey:"name"] !== [CPNull null] ? [[aValue objectForKey:"user"] objectForKey:"name"] : [[aValue objectForKey:"user"] objectForKey:"login"];
+
+    [userField setStringValue:name];
     [userField sizeToFit];
 
     var point = [openedOnLabel frame].origin;
@@ -58,7 +60,7 @@
 
     point.x = CGRectGetMaxX([openedOnLabel frame]) + 2;
     [openedOnField setFrameOrigin:point];
-    [openedOnField setStringValue:aValue.created_at];
+    [openedOnField setStringValue:[aValue objectForKey:"created_at"]];
     [openedOnField sizeToFit];
 
     point.x = CGRectGetMaxX([openedOnField frame]) + 2;
@@ -66,11 +68,11 @@
 
     point.x = CGRectGetMaxX([updatedLabel frame]) + 2;
     [updatedField setFrameOrigin:point];
-    [updatedField setStringValue:aValue.updated_at];
+    [updatedField setStringValue:[aValue objectForKey:"updated_at"]];
     [updatedField sizeToFit];
 
-    [commentsField setStringValue:aValue.comments + " comments"];
-    [avatarView setImage:[[CPImage alloc] initByReferencingFile:aValue.user.gravatar_url size:CGSizeMake(30, 30)]];
+    [commentsField setStringValue:[aValue objectForKey:"comments"] + " comments"];
+    [avatarView setImage:[[CPImage alloc] initByReferencingFile:[[aValue objectForKey:"user"] objectForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
 }
 
 - (void)encodeWithCoder:(CPCoder)aCoder
