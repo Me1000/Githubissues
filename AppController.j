@@ -31,6 +31,7 @@
     @outlet CPSplitView verticalSplitView;
 
     @outlet ISRepositoriesController reposController;
+    @outlet ISModel     model @accessors;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -52,6 +53,9 @@
     }
 
     // FIX ME: parse the url arguments
+
+    // Load any saved settings.
+    [model load];
 }
 
 - (void)awakeFromCib
@@ -100,7 +104,6 @@
 - (IBAction)newRepo:(id)aSender
 {
     [[ISNewRepoWindow sharedWindow] showWindow:aSender];
-;
 }
 
 
