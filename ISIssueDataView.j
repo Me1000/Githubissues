@@ -49,9 +49,13 @@
     [titleField setStringValue:"#" + [aValue objectForKey:"number"] +" " + [aValue objectForKey:"title"]];
     [titleField sizeToFit];
 
-    var user = [aValue objectForKey:"user"];
+    var user = [aValue objectForKey:"user"],
+        name = [user valueForKey:"name"];
 
-    [userField setStringValue:[user objectForKey:"name"] || [user objectForKey:"login"]];
+    if (!name || [name isEqual:[CPNull null]])
+        name = [user valueForKey:"login"];
+
+    [userField setStringValue:name];
     [userField sizeToFit];
 
     var point = [openedOnLabel frame].origin;
