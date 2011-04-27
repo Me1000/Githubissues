@@ -18,7 +18,6 @@
 @import "CPWindow+animations.j"
 @import "ISGithubAPIController.j"
 @import "ISWindow.j"
-@import "EKActivityIndicatorView.j"
 @import "ISIssueDataView.j"
 @import "ISModel.j"
 
