@@ -35,7 +35,7 @@
     [commentsIcon  setValue:offset forThemeAttribute:"text-shadow-offset"];
     [commentsField setValue:offset forThemeAttribute:"text-shadow-offset"];
 
-    // Size to fit them here that way we don't have to do it in setObjectValue: 
+    // Size to fit them here that way we don't have to do it in setObjectValue:
     // should make performance better while scrolling.
 
     [openedOnLabel sizeToFit];
@@ -46,10 +46,12 @@
 {
     [avatarView setImage:resourcesImage("gravatar-140.png", 30, 30)];
 
-    [titleField setStringValue:"#"+aValue.number+" "+aValue.title];
+    [titleField setStringValue:"#" + [aValue valueForKey:"number"] +" " + [aValue valueForKey:"title"]];
     [titleField sizeToFit];
 
-    [userField setStringValue:aValue.user.name || aValue.user.login];
+    var user = [aValue valueForKey:"user"];
+
+    [userField setStringValue:[user valueForKey:"name"] || [user valueForKey:"login"]];
     [userField sizeToFit];
 
     var point = [openedOnLabel frame].origin;
@@ -58,7 +60,7 @@
 
     point.x = CGRectGetMaxX([openedOnLabel frame]) + 2;
     [openedOnField setFrameOrigin:point];
-    [openedOnField setStringValue:aValue.created_at];
+    [openedOnField setStringValue:[aValue valueForKey:"created_at"]];
     [openedOnField sizeToFit];
 
     point.x = CGRectGetMaxX([openedOnField frame]) + 2;
@@ -66,11 +68,11 @@
 
     point.x = CGRectGetMaxX([updatedLabel frame]) + 2;
     [updatedField setFrameOrigin:point];
-    [updatedField setStringValue:aValue.updated_at];
+    [updatedField setStringValue:[aValue valueForKey:"updated_at"]];
     [updatedField sizeToFit];
 
-    [commentsField setStringValue:aValue.comments + " comments"];
-    [avatarView setImage:[[CPImage alloc] initByReferencingFile:aValue.user.gravatar_url size:CGSizeMake(30, 30)]];
+    [commentsField setStringValue:[aValue valueForKey:"comments"] + " comments"];
+    [avatarView setImage:[[CPImage alloc] initByReferencingFile:[user valueForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
 }
 
 - (void)encodeWithCoder:(CPCoder)aCoder
