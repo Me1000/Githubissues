@@ -333,10 +333,19 @@ var APIURLWithString = function(/*CPString*/aString)
             {
                 try
                 {
-                    request.MYData = JSON.parse(request.responseText());
+                    var responseData = JSON.parse(request.responseText()),
+                        c = responseData.length,
+                        i = 0;
+
+                    request.MYData = [];
+
+                    // Reversing them
+                    while(c--)
+                        request.MYData.push([CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES]);
                 }
                 catch (e)
                 {
+                    // FIX ME: make this more descriptivate I guess...
                     CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
                 }
             }
@@ -348,12 +357,11 @@ var APIURLWithString = function(/*CPString*/aString)
                 return;
             else
             {
-                for (var i = 0; i < requests.length; i++)
-                    console.log("status",requests[0].readyState());
+                var concatIssues = [],
+                    count = requests.length;
 
-                var concatIssues = [];
-
-                for (var i = 0; i < requests.length; i++)
+                // reversing them making sure it increments as you go down...
+                while(count--)
                     [concatIssues addObjectsFromArray:requests[i].MYData];
 
                 [aRepo setValue:concatIssues forKey:stateKey];
@@ -368,7 +376,6 @@ var APIURLWithString = function(/*CPString*/aString)
         request.send("");
 
         requests.push(request);
-        console.log("page:", page)
         page++;
         })();
     }
