@@ -148,17 +148,17 @@ var SharedNewRepoWindow = nil;
 
     [submitButton setValue:GreenButtonColor forThemeAttribute:"bezel-color"];
     [submitButton setValue:GreenButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-
-    [submitButton setValue:[CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1] forThemeAttribute:"text-color" inState:CPThemeStateDisabled];
-    [submitButton setValue:[CPColor colorWithRed:1 green:1 blue:1 alpha:.1] forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
     [submitButton setValue:GreenButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
+
     [submitButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
     [submitButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
+    [submitButton setValue:[CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1] forThemeAttribute:"text-color" inState:CPThemeStateBordered|CPThemeStateDisabled];
+    [submitButton setValue:[CPColor colorWithRed:1 green:1 blue:1 alpha:.2] forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
 
     [cancelButton setValue:RedButtonColor forThemeAttribute:"bezel-color"];
     [cancelButton setValue:RedButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-//    [cancelButton setValue:RedButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
+    //[cancelButton setValue:RedButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
     [cancelButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
     [cancelButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
@@ -191,9 +191,7 @@ var SharedNewRepoWindow = nil;
 
 - (void)controlTextDidChange:(CPNotification)aNote
 {
-    var slashPosition =  [repoNameField stringValue].indexOf("/"),
-        enabled = ([[repoNameField stringValue] length] > 2 && slashPosition !== CPNotFound && slashPosition !== 0 && slashPosition !== [[repoNameField stringValue] length] -1);
-    [submitButton setEnabled:enabled];
+    [submitButton setEnabled:[self _isValid]];
 }
 
 - (void)windowDidMove:(CPNotification)aNote
@@ -203,6 +201,9 @@ var SharedNewRepoWindow = nil;
 
 - (@action)addRepo:(id)sender
 {
+    if (![self _isValid])
+        return;
+
     var callback = function(aRepo, request)
     {
         [repoController addRepository:aRepo select:YES];
@@ -222,6 +223,14 @@ var SharedNewRepoWindow = nil;
     [self orderOutWithAnimation:sender];
 }
 
+- (BOOL)_isValid
+{
+    var slashPosition =  [repoNameField stringValue].indexOf("/");
+        enabled = ([[repoNameField stringValue] length] > 2 && slashPosition !== CPNotFound && slashPosition !== 0 && slashPosition !== [[repoNameField stringValue] length] -1);
+
+    return enabled;    
+}
+
 - (void)sendEvent:(CPEvent)anEvent
 {
     if ([anEvent type] === CPKeyUp)
@@ -229,18 +238,10 @@ var SharedNewRepoWindow = nil;
         if ([anEvent keyCode] === CPEscapeKeyCode)
             [self cancel:self];
         else if ([self firstResponder] !== repoNameField)
-        {
             [self makeFirstResponder:repoNameField];
-
-            // FIX ME: this should start typing... instead we get a stupid DOM delay (I think)
-            // which just causes this to select the text and the user loses the first couple letters
-            [super sendEvent:anEvent];
-        }
-        else
-            [super sendEvent:anEvent];
     }
-    else
-        [super sendEvent:anEvent];
+
+    [super sendEvent:anEvent];
 }
 
 @end
