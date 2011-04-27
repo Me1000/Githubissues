@@ -40,7 +40,7 @@ var kSortBarHeight = 36,
         keys  = ["id", "title", "created", "updated", "creator", "pull_request"],
         c = items.length,
         i = 0,
-        origin = CGPointMake(45, 0),
+        origin = CGPointMake(-1, 0),
         optionsMenu = [[CPMenu alloc] init];
 
     [optionsMenu setMinimumWidth:130];
@@ -84,22 +84,6 @@ var kSortBarHeight = 36,
 
         [optionsMenu addItem:item];
     }
-
-    // add the gear button thingy
-    optionsPopupButton = [[CPPopUpButton alloc] initWithFrame:CGRectMake(18, 12, 12, 13)];
-    [optionsPopupButton setValue:[CPColor colorWithPatternImage:resourcesImage("optionsgear.png",12, 13)] forThemeAttribute:"bezel-color"];
-
-//    [optionsPopupButton addItemWithTitle:nil];
-  //  [[optionsPopupButton lastItem] setImage:resourcesImage("optionsgear.png",12, 13)];
-    [optionsPopupButton setImagePosition:CPImageOnly];
-    [optionsPopupButton setValue:CGInsetMake(0, 0, 0, 0) forThemeAttribute:"content-inset"];
-
-    [optionsPopupButton setPullsDown:YES];
-//    [optionsPopupButton setBordered:NO];
-
-    [optionsPopupButton setMenu:optionsMenu];
-
-    [self addSubview:optionsPopupButton];
     
 }
 
@@ -147,6 +131,7 @@ var kSortBarHeight = 36,
     [self setValue:[CPColor colorWithRed:145/255 green:150/255 blue:153/255 alpha:1] forThemeAttribute:"text-color"];
     [self setValue:[CPColor whiteColor] forThemeAttribute:"text-shadow-color"];
     [self setValue:CGSizeMake(0,1) forThemeAttribute:"text-shadow-offset"];
+    [self setValue:CGInsetMake(0, 10, 0, 17) forThemeAttribute:"content-inset" inState:CPThemeStateBordered];
     [self setFont:[CPFont boldSystemFontOfSize:11]];
 
     [self setTitle:aTitle];

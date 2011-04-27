@@ -90,14 +90,17 @@ var ISSourceLockImage       = nil,
         width = [self frameSize].width,
         height = [textfield frameSize].height;
 
-    [textfield setFrameSize:CGSizeMake(width - origin.x - inset, height)];
-
     // Size to fit works automatically because the theme insets are correct.
     [assignedBadgeView sizeToFit];
-    [assignedBadgeView setFrame:CGRectMake(width - [assignedBadgeView bounds].size.width - 30, 9, [assignedBadgeView bounds].size.width, 17)];
-
     [openBadgeView sizeToFit];
+
+
+    var beginingOfBadge = width - [assignedBadgeView bounds].size.width - [openBadgeView bounds].size.width - 3;
+    [assignedBadgeView setFrame:CGRectMake(beginingOfBadge, 9, [assignedBadgeView bounds].size.width, 17)];
+
     [openBadgeView setFrameOrigin:CGPointMake(CGRectGetMaxX([assignedBadgeView frame]), 9)];
+
+    [textfield setFrameSize:CGSizeMake(beginingOfBadge - inset, height)];
 }
 
 - (void)setObjectValue:(id)aValue

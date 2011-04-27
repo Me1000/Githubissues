@@ -79,27 +79,6 @@ var APIURLWithString = function(/*CPString*/aString)
     else
         [self promptForAuthentication:sender];
 }
-
-- (void)logoutPrompt:(id)sender
-{
-    // if we're not using OAuth it's a pain to find the
-    // API token... so just ask them to make sure
-
-    if (oauthAccessToken)
-        return [self logout:nil];
-
-    logoutWarn= [[CPAlert alloc] init];
-    [logoutWarn setTitle:"Are You Sure?"];
-    [logoutWarn setMessageText:"Are you sure you want to logout?"];
-    [logoutWarn setInformativeText:text];
-    [logoutWarn setAlertStyle:CPInformationalAlertStyle];
-    [logoutWarn addButtonWithTitle:"Cancel"];
-    [logoutWarn setDelegate:self];
-    [logoutWarn addButtonWithTitle:"Logout"];
-
-    [logoutWarn runModal];
-}
-
 - (void)logout:(id)sender
 {
     username = nil;
@@ -147,6 +126,10 @@ var APIURLWithString = function(/*CPString*/aString)
     //github.com/users/technoweenie.json
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
+
+    // FIX ME: github is broked
+    if (window.location && window.location.protocol === "file:" && username && password)
+        request.setRequestHeader("Authorization", "Basic "+CFData.encodeBase64String(username +":" + password));
 
     // FIX ME: this URL is wrong.
     request.open("GET", [self _urlForAPICall:"user.json"], true);
@@ -350,10 +333,19 @@ var APIURLWithString = function(/*CPString*/aString)
             {
                 try
                 {
-                    request.MYData = JSON.parse(request.responseText());
+                    var responseData = JSON.parse(request.responseText()),
+                        c = responseData.length,
+                        i = 0;
+
+                    request.MYData = [];
+
+                    // Reversing them
+                    while(c--)
+                        request.MYData.push([CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES]);
                 }
                 catch (e)
                 {
+                    // FIX ME: make this more descriptivate I guess...
                     CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
                 }
             }
@@ -365,12 +357,11 @@ var APIURLWithString = function(/*CPString*/aString)
                 return;
             else
             {
-                for (var i = 0; i < requests.length; i++)
-                    console.log("status",requests[0].readyState());
+                var concatIssues = [],
+                    count = requests.length;
 
-                var concatIssues = [];
-
-                for (var i = 0; i < requests.length; i++)
+                // reversing them making sure it increments as you go down...
+                while(count--)
                     [concatIssues addObjectsFromArray:requests[i].MYData];
 
                 [aRepo setValue:concatIssues forKey:stateKey];
@@ -385,7 +376,6 @@ var APIURLWithString = function(/*CPString*/aString)
         request.send("");
 
         requests.push(request);
-        console.log("page:", page)
         page++;
         })();
     }
