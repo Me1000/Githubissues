@@ -81,8 +81,13 @@
         [issuesList addTableColumn:col];
 
         [issuesList sizeLastColumnToFit];
+    }
 
-
+    if (!activeRepository)
+    {
+        // Make sure the table knows we have 0 rows now.
+        [issuesList reloadData];
+        return;
     }
 
     var issues = [activeRepository valueForKey:visisbleIssuesKey];
@@ -149,6 +154,9 @@ console.log("changed",path, obj);
 
 - (int)numberOfRowsInTableView:(CPTableView)aTable
 {
+    if (!activeRepository)
+        return 0;
+
     if (filteredIssues)
         return [filteredIssues count];
 
@@ -157,6 +165,9 @@ console.log("changed",path, obj);
 
 - (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
+    if (!activeRepository)
+        return nil;
+
     if (filteredIssues)
         return filteredIssues[aRow];
 
