@@ -47,7 +47,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
     CPImage  userImage;
     CPImage userThumbnailImage @accessors;
-    
+
 }
 
 + (id)sharedController
@@ -194,21 +194,21 @@ var APIURLWithString = function(/*CPString*/aString)
             var githubController = self;
             [githubController setUsername:user];
             [githubController setPassword:pass];
-            
+
             [githubController authenticateWithCallback:function(success)
             {
 //                [progressIndicator setHidden:YES];
 //                [errorMessageField setHidden:success];
 //                [defaultButton setEnabled:YES];
 //                [cancelButton setEnabled:YES];
-            
+
                 if (success)
                 {
 //                    [[[NewRepoWindow sharedNewRepoWindow] errorMessageField] setHidden:YES];
 //                    [self orderOut:self];
                 }
             }];
-            
+
 //            [errorMessageField setHidden:YES];
 //            [progressIndicator setHidden:NO];
 //            [defaultButton setEnabled:NO];
@@ -322,11 +322,11 @@ var APIURLWithString = function(/*CPString*/aString)
     {
         (function(){
         var request = new CFHTTPRequest();
-        
+
         request.setRequestHeader("accept", "application/vnd.github.v3+json");
-        
+
         request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
-        
+
         request.oncomplete = function()
         {
             if (request.success())
@@ -362,7 +362,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
                 // reversing them making sure it increments as you go down...
                 while(count--)
-                    [concatIssues addObjectsFromArray:requests[i].MYData];
+                    [concatIssues addObjectsFromArray:requests[count].MYData];
 
                 [aRepo setValue:concatIssues forKey:stateKey];
 
@@ -372,7 +372,7 @@ var APIURLWithString = function(/*CPString*/aString)
                 [[CPRunLoop currentRunLoop] performSelectors];
             }
         };
-        
+
         request.send("");
 
         requests.push(request);
