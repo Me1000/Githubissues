@@ -26,7 +26,7 @@
 
 
     @outlet ISIssueDataView dataviewproto;
-    
+
 }
 
 - (id)init
@@ -36,13 +36,6 @@
     visisbleIssuesKey = "open";
 
     return self;
-}
-
-- (void)setActiveRepo:(ISRepository)aRepo
-{
-    activeRepository = aRepo;
-
-    [self _showIssues];
 }
 
 - (void)_showIssues
@@ -71,7 +64,7 @@
 
         [issuesList setAlternatingRowBackgroundColors:
                 [
-                    [CPColor colorWithRed:250/255 green:250/255 blue:250/255 alpha:1], 
+                    [CPColor colorWithRed:250/255 green:250/255 blue:250/255 alpha:1],
                     [CPColor colorWithRed:245/255 green:247/255 blue:247/255 alpha:1]
                 ]
         ];
@@ -88,7 +81,7 @@
         [issuesList addTableColumn:col];
 
         [issuesList sizeLastColumnToFit];
-        
+
 
     }
 

@@ -20,10 +20,29 @@
     CPTableView filterlist @accessors;
 }
 
++ (CPSet)keyPathsForValuesAffectingSelectedObject
+{
+    return [CPSet setWithObjects:"selectedObjects"];
+}
+
 - (void)awakeFromCib
 {
     // TODO This could just as well be done in the CIB.
     [self bind:@"contentArray" toObject:model withKeyPath:@"repositories" options:nil];
+    [issuesController bind:@"activeRepository" toObject:self withKeyPath:@"selectedObject" options:nil];
+}
+
+/*!
+    Exactly like 'selectedObjects' but always gets the first selected object or nothing.
+
+    Observable.
+*/
+- (id)selectedObject
+{
+    var selectedObjects = [self selectedObjects];
+    if (![selectedObjects count])
+        return nil;
+    return [selectedObjects firstObject];
 }
 
 - (void)addRepository:(ISRepository)aRepo select:(BOOL)shouldSelect
@@ -46,12 +65,6 @@
 
     // TODO Do this automatically somehow.
     [model save];
-}
-
-- (void)tableViewSelectionDidChange:(CPTableView)aTable
-{
-    // TODO Replace with a binding to selectionIndexes.
-    [issuesController setActiveRepository:[[self selectedObjects] firstObject]];
 }
 
 @end
