@@ -198,7 +198,15 @@ var SharedNewRepoWindow = nil;
     if ([[repoNameField stringValue] length])
     {
         if (!CGSizeEqualToSize(currentFrame.size, CGSizeMake(381, 365)))
-            [self setFrame:CGRectMake(currentFrame.origin.x, currentFrame.origin.y, 381,364) display:YES animate:YES];
+        {
+            
+            var visible = [CPPlatform isBrowser] ? [[self platformWindow] visibleFrame] : [[[CPScreen alloc] init] visibleFrame],
+                realY = (currentFrame.origin.y + 364 > visible.size.height) ? visible.size.height - 364 : currentFrame.origin.y,
+                y = MAX(realY,0),
+                offset = MAX(y - realY, 0); // This will prevent it from ever being too large... unless it's < 364
+
+                [self setFrame:CGRectMake(currentFrame.origin.x, y, 381, MIN(364, 364 + offset)) display:YES animate:[self isVisible]];
+        }
     }
     else
     {
@@ -225,6 +233,7 @@ var SharedNewRepoWindow = nil;
         // wait for the window to disapear before removing the text.
         window.setTimeout(function(){
             [repoNameField setStringValue:""];
+            [self controlTextDidChange:nil];
         },230);
     }
 
@@ -234,6 +243,11 @@ var SharedNewRepoWindow = nil;
 - (@action)cancel:(id)sender
 {
     [self orderOutWithAnimation:sender];
+
+    window.setTimeout(function(){
+        [repoNameField setStringValue:""];
+        [self controlTextDidChange:nil];
+    },230);
 }
 
 - (BOOL)_isValid
