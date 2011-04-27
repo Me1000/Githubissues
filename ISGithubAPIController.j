@@ -119,6 +119,19 @@ var APIURLWithString = function(/*CPString*/aString)
     return urlForCall;
 }
 
+- (void)repoSuggestWithSearchString:(CPString)aSearchString callback:(Function)aCallback
+{
+    var results = [ [CPDictionary dictionaryWithObject:"280north/cappuccino"  forKey:"title"], 
+                    [CPDictionary dictionaryWithObject:"280north/issues"  forKey:"title"], 
+                    [CPDictionary dictionaryWithObject:"Me1000/githubissues"  forKey:"title"]
+                  ];
+
+    // DO SOME SEARCHIGN!!!!
+
+    if (aCallback)
+        aCallback(results);
+}
+
 - (void)authenticateWithCallback:(Function)aCallback
 {
     var request = new CFHTTPRequest();

@@ -115,7 +115,11 @@ var SharedNewRepoWindow = nil;
     @outlet CPButton                  submitButton;
     @outlet CPButton                  cancelButton;
 
-    @outlet ISRepositoriesController repoController;
+    @outlet ISRepositoriesController  repoController;
+
+            CPScrollView              scrollview;
+            CPTableView               suggestTable;
+            CPArrayController         suggestedReposController;
 }
 
 + (id)sharedWindow
@@ -164,8 +168,6 @@ var SharedNewRepoWindow = nil;
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
 
     [repoNameField setDelegate:self];
-    
-
 }
 
 - (void)showWindow:(id)sender
@@ -206,6 +208,38 @@ var SharedNewRepoWindow = nil;
                 offset = MAX(y - realY, 0); // This will prevent it from ever being too large... unless it's < 364
 
                 [self setFrame:CGRectMake(currentFrame.origin.x, y, 381, MIN(364, 364 + offset)) display:YES animate:[self isVisible]];
+
+                // FIX ME: If we do this while the window is animating it'll likely result in a terrible frame rate.
+                // set it up
+                if (!scrollview)
+                {
+                    suggestedReposController = [[CPArrayController alloc] init];
+//                    [suggestedReposController setContent:];
+
+                    // FIX ME: use HUD style.
+                    scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(22, 100, 338, 200)];
+                    suggestTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
+
+                    var col = [[CPTableColumn alloc] initWithIdentifier:"Suggestions"];
+                    [col bind:CPValueBinding toObject:suggestedReposController withKeyPath:"arrangedObjects.title" options:nil];
+
+                    [suggestTable setHeaderView:nil];
+                    [suggestTable setCornerView:nil];
+
+                    [suggestTable addTableColumn:col];
+
+                    [scrollview setDocumentView:suggestTable];
+                }
+
+                // Wait for the window to finish animating
+                window.setTimeout(function(){
+                   [[self contentView] addSubview:scrollview];
+                },170);
+
+                // Make calls to the Search API
+                [[ISGithubAPIController sharedController] repoSuggestWithSearchString:[repoNameField stringValue] callback:function(/*CPArray*/results){
+                    [suggestedReposController setContent:results];
+                }];
         }
     }
     else
