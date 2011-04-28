@@ -29,7 +29,7 @@
     CPArray     closed @accessors;
 }
 
-+ (CPSet)keyPathsForValuesAffectingSiderbarRepresentation
++ (CPSet)keyPathsForValuesAffectingSidebarRepresentation
 {
     return [CPSet setWithObjects:"name", "isPrivate", "numberOfOpenIssues", "issuesAssignedToCurrentUser"];
 }
