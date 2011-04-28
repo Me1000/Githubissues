@@ -358,9 +358,11 @@ var APIURLWithString = function(/*CPString*/aString)
                     {
                         var obj = [CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES];
 
-                        if (stateKey === "open" && [[obj objectForKey:"assignee"] objectForKey:"login"] === username)
-                            totalAssigned++;
-console.log(totalAssigned, obj);
+                        if (stateKey === "open")
+                            if ([obj objectForKey:"assignee"] !== [CPNull null])
+                                if ([[obj objectForKey:"assignee"] objectForKey:"login"] !== [CPNull null])
+                                    totalAssigned++;
+
                         request.MYData.push(obj);
                     }
                 }
@@ -387,6 +389,7 @@ console.log(totalAssigned, obj);
 
                 [aRepo setValue:concatIssues forKey:stateKey];
                 [aRepo setValue:totalAssigned forKey:"issuesAssignedToCurrentUser"];
+                [aRepo setIssuesAssignedToCurrentUser:totalAssigned];
 
                 if (aCallback)
                     aCallback(aRepo, requests);
