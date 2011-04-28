@@ -173,9 +173,9 @@ console.log("changed",path, obj);
         return nil;
 
     if (filteredIssues)
-        return filteredIssues[aRow];
+        return [filteredIssues objectAtIndex:aRow];
 
-    return [activeRepository valueForKey:visisbleIssuesKey][aRow];
+    return [[activeRepository valueForKey:visisbleIssuesKey] objectAtIndex:aRow];
 }
 
 @end
