@@ -111,7 +111,11 @@
 
 - (void)sortDescriptorsDidChange:(CPArray)newSortDescriptors
 {
-    console.log(newSortDescriptors);
+    console.log("bam",newSortDescriptors);
+
+    [[activeRepository valueForKey:visisbleIssuesKey] sortUsingDescriptors:newSortDescriptors];
+    [issuesList setSortDescriptors:newSortDescriptors];
+    [issuesList reloadData];
 }
 
 - (void)setActiveRepository:(ISRepository)aRepo

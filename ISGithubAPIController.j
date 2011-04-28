@@ -329,14 +329,15 @@ var APIURLWithString = function(/*CPString*/aString)
     // FIX ME WE NEED TO DO THIS FOR CLOSED ISSUES TOO :(
     var numberOfIssues = [aRepo numberOfOpenIssues],
         page = 1,
-        requests = [];
+        requests = [],
+        totalAssigned = 0;
 
     while((page * 100) <= numberOfIssues + 100)
     {
         (function(){
         var request = new CFHTTPRequest();
 
-        request.setRequestHeader("accept", "application/vnd.github.v3+json");
+//        request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
         request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
 
@@ -354,7 +355,14 @@ var APIURLWithString = function(/*CPString*/aString)
 
                     // Reversing them
                     while(c--)
-                        request.MYData.push([CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES]);
+                    {
+                        var obj = [CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES];
+
+                        if (stateKey === "open" && [[obj objectForKey:"assignee"] objectForKey:"login"] === username)
+                            totalAssigned++;
+console.log(totalAssigned, obj);
+                        request.MYData.push(obj);
+                    }
                 }
                 catch (e)
                 {
@@ -378,6 +386,7 @@ var APIURLWithString = function(/*CPString*/aString)
                     [concatIssues addObjectsFromArray:requests[count].MYData];
 
                 [aRepo setValue:concatIssues forKey:stateKey];
+                [aRepo setValue:totalAssigned forKey:"issuesAssignedToCurrentUser"];
 
                 if (aCallback)
                     aCallback(aRepo, requests);

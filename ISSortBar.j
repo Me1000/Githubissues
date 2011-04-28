@@ -37,7 +37,7 @@ var kSortBarHeight = 36,
 
     // FIX ME: I'm sure this can be done easier
     var items = ["ID", "Title", "Created", "Updated", "Creator", "Pull Request"],
-        keys  = ["id", "title", "created", "updated", "creator", "pull_request"],
+        keys  = ["number", "title", "created_at", "updated_at", "user.login", "pull_request"],
         c = items.length,
         i = 0,
         origin = CGPointMake(-1, 0),

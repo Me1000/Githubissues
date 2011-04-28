@@ -221,12 +221,11 @@ var SharedNewRepoWindow = nil;
                     suggestTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
 
                     var col = [[CPTableColumn alloc] initWithIdentifier:"Suggestions"];
+                    [suggestTable addTableColumn:col];
                     [col bind:CPValueBinding toObject:suggestedReposController withKeyPath:"arrangedObjects.title" options:nil];
 
                     [suggestTable setHeaderView:nil];
                     [suggestTable setCornerView:nil];
-
-                    [suggestTable addTableColumn:col];
 
                     [scrollview setDocumentView:suggestTable];
                 }
