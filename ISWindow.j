@@ -107,6 +107,10 @@ var WindowBackground = nil,
 
 @end
 
+
+/*!
+    The window for adding a new repo
+*/
 var SharedNewRepoWindow = nil;
 
 @implementation ISNewRepoWindow : ISWindow
@@ -371,6 +375,9 @@ var SharedNewRepoWindow = nil;
 
 @end
 
+/*!
+    The window for adding a new issue.
+*/
 @implementation ISNewIssueWindow : ISWindow
 {
     @outlet CPTextField titleField;
