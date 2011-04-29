@@ -20,6 +20,7 @@
 @import "ISWindow.j"
 @import "ISIssueDataView.j"
 @import "ISModel.j"
+@import "ISLoadingIndicator.j"
 
 @implementation AppController : CPObject
 {
@@ -55,6 +56,7 @@
 
     // Load any saved settings.
     [model load];
+
 }
 
 - (void)awakeFromCib

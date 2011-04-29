@@ -220,7 +220,7 @@ var SharedNewRepoWindow = nil;
                     suggestedReposController = [[CPArrayController alloc] init];
 
                     // FIX ME: use HUD style.
-                    scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(22, 100, 338, 200)];
+                    scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(11, 100, 356, 200)];
                     suggestTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
 
                     var col = [[CPTableColumn alloc] initWithIdentifier:"Suggestions"];
@@ -228,7 +228,8 @@ var SharedNewRepoWindow = nil;
                     [col bind:CPValueBinding toObject:suggestedReposController withKeyPath:"arrangedObjects.identifier" options:nil];
 
                     var dv = [[CPTextField alloc] init];
-                    [dv setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
+                    [dv setValue:[CPColor colorWithHexString:"cccccc"] forThemeAttribute:"text-color"];
+                    [dv setFont:[CPFont systemFontOfSize:11]];
                     [col setDataView:dv];
 
                     [suggestTable setHeaderView:nil];
@@ -243,9 +244,9 @@ var SharedNewRepoWindow = nil;
                     [scrollview setHasHorizontalScroller:NO];
                     [scrollview setAutohidesScrollers:YES];
 
-                    [suggestTable setAlternatingRowBackgroundColors:[[CPColor colorWithHexString:"273036"], [CPColor colorWithHexString:"293339"]]];
+                    [suggestTable setAlternatingRowBackgroundColors:[[CPColor colorWithHexString:"242c31"], [CPColor colorWithHexString:"262e33"]]];
                     [suggestTable setUsesAlternatingRowBackgroundColors:YES];
-                    [suggestTable setSelectionHighlightColor:[CPColor colorWithHexString:"3e474d"]];
+                    [suggestTable setSelectionHighlightColor:[CPColor colorWithHexString:"364046"]];
                     [suggestTable setAllowsEmptySelection:YES];
                 }
 
@@ -282,6 +283,7 @@ var SharedNewRepoWindow = nil;
 
     var callback = function(aRepo, aRequest)
     {
+        [loadingIndicator stopAnimating];
         [loadingIndicator setHidden:YES];
         [repoNameField setEnabled:YES];
 
@@ -296,6 +298,7 @@ var SharedNewRepoWindow = nil;
 
         // wait for the window to disapear before removing the text.
         window.setTimeout(function(){
+
             [repoNameField setStringValue:""];
             [self controlTextDidChange:nil];
         },230);
@@ -305,6 +308,7 @@ var SharedNewRepoWindow = nil;
     [repoNameField setEnabled:NO];
     [errorLabel setHidden:YES];
     [loadingIndicator setHidden:NO];
+    [loadingIndicator startAnimating];
 }
 
 - (@action)cancel:(id)sender
@@ -329,7 +333,6 @@ var SharedNewRepoWindow = nil;
 {
     if ([anEvent type] === CPKeyUp)
     {
-console.log(anEvent, [anEvent keyCode]);
         var excludedKeys = [CPUpArrowKeyCode, CPDownArrowKeyCode];
 
         if ([anEvent keyCode] === CPEscapeKeyCode)
@@ -360,7 +363,6 @@ console.log(anEvent, [anEvent keyCode]);
 
 - (void)_setRepoAndAdd:(id)sender
 {
-console.log("bam")
     var index = [[suggestTable selectedRowIndexes] firstIndex];
     [repoNameField setStringValue:[[suggestedReposController contentArray][index] identifier]];
 
