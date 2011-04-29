@@ -259,8 +259,8 @@ var APIURLWithString = function(/*CPString*/aString)
                 var gravatarURL = GravatarBaseURL + emailAddressHashed;
                 userImage = [[CPImage alloc] initWithContentsOfFile:gravatarURL + "?s=68&d=identicon"
                                                                size:CGSizeMake(68, 68)];
-                userThumbnailImage = [[CPImage alloc] initWithContentsOfFile:gravatarURL + "?s=30&d=identicon"
-                                                                        size:CGSizeMake(30, 30)];
+                userThumbnailImage = [[CPImage alloc] initWithContentsOfFile:gravatarURL + "?s=34&d=identicon"
+                                                                        size:CGSizeMake(34, 34)];
             }
 
             [[CPUserSessionManager defaultManager] setStatus:CPUserSessionLoggedInStatus];
