@@ -19,7 +19,7 @@
 @implementation ISRepository : CPObject
 {
     CPString    name @accessors;
-    CPString    identifier @accessors;
+    CPString    owner @accessors;
     BOOL        isPrivate @accessors;
     int         numberOfOpenIssues @accessors;
     // TODO Come up with a better name.
@@ -31,7 +31,24 @@
 
 + (CPSet)keyPathsForValuesAffectingSidebarRepresentation
 {
-    return [CPSet setWithObjects:"name", "isPrivate", "numberOfOpenIssues", "issuesAssignedToCurrentUser"];
+    return [CPSet setWithObjects:"identifier", "isPrivate", "numberOfOpenIssues", "issuesAssignedToCurrentUser"];
+}
+
++ (CPSet)keyPathsForValuesAffectingIdentifier
+{
+    return [CPSet setWithObjects:"name", "owner"];
+}
+
++ (id)repositoryWithJSObject:(JSObject)anObject
+{
+    var newRepo = [[ISRepository alloc] init];
+
+    [newRepo setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
+    [newRepo setIsPrivate:anObject["private"]];
+    [newRepo setNumberOfOpenIssues:anObject.open_issues];
+    [newRepo setIssuesAssignedToCurrentUser:0];
+
+    return newRepo;
 }
 
 /*!
@@ -41,6 +58,19 @@
 - (ISRepository)sidebarRepresentation
 {
     return self;
+}
+
+- (CPString)identifier
+{
+    return owner + "/" + name;
+}
+
+- (void)setIdentifier:(CPString)aString
+{
+    var pos = aString.indexOf("/");
+
+    [self setOwner:[aString substringToIndex:pos]];
+    [self setName:[aString substringFromIndex:pos+1]];
 }
 
 - (void)load
@@ -54,8 +84,8 @@
 {
     self = [super init];
 
-    name                = [aCoder decodeObjectForKey:"name"];
-    identifier          = [aCoder decodeObjectForKey:"identifier"];
+
+    [self setIdentifier:[aCoder decodeObjectForKey:"identifier"]];
     isPrivate           = [aCoder decodeObjectForKey:"isPrivate"];
     numberOfOpenIssues  = [aCoder decodeObjectForKey:"numberOfOpenIssues"];
     issuesAssignedToCurrentUser = [aCoder decodeObjectForKey:"issuesAssignedToCurrentUser"];
@@ -67,8 +97,7 @@
 
 - (void)encodeWithCoder:(CPCoder)aCoder
 {
-    [aCoder encodeObject:name forKey:"name"];
-    [aCoder encodeObject:identifier forKey:"identifier"];
+    [aCoder encodeObject:[self identifier] forKey:"identifier"];
     [aCoder encodeObject:isPrivate forKey:"isPrivate"];
     [aCoder encodeObject:numberOfOpenIssues forKey:"numberOfOpenIssues"];
     [aCoder encodeObject:issuesAssignedToCurrentUser forKey:"issuesAssignedToCurrentUser"];

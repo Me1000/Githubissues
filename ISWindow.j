@@ -114,6 +114,8 @@ var SharedNewRepoWindow = nil;
     @outlet CPTextField               repoNameField;
     @outlet CPButton                  submitButton;
     @outlet CPButton                  cancelButton;
+    @outlet CPTextField               errorLabel;
+    @outlet ISLoadingIndicator        loadingIndicator;
 
     @outlet ISRepositoriesController  repoController;
 
@@ -168,6 +170,8 @@ var SharedNewRepoWindow = nil;
     [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
 
     [repoNameField setDelegate:self];
+
+    [errorLabel sizeToFit];
 }
 
 - (void)showWindow:(id)sender
@@ -222,24 +226,40 @@ var SharedNewRepoWindow = nil;
 
                     var col = [[CPTableColumn alloc] initWithIdentifier:"Suggestions"];
                     [suggestTable addTableColumn:col];
-                    [col bind:CPValueBinding toObject:suggestedReposController withKeyPath:"arrangedObjects.title" options:nil];
+                    [col bind:CPValueBinding toObject:suggestedReposController withKeyPath:"arrangedObjects.identifier" options:nil];
+
+                    var dv = [[CPTextField alloc] init];
+                    [dv setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
+                    [col setDataView:dv];
 
                     [suggestTable setHeaderView:nil];
                     [suggestTable setCornerView:nil];
 
                     [scrollview setDocumentView:suggestTable];
+                    [suggestTable sizeLastColumnToFit];
+
+                    [suggestTable setTarget:self];
+                    [suggestTable setDoubleAction:@selector(_setRepoAndAdd:)];
+
+                    [scrollview setHasHorizontalScroller:NO];
+                    [scrollview setAutohidesScrollers:YES];
+
+//                    [suggestTable setSelectionHighlightColor:];
+                    [suggestTable setAlternatingRowBackgroundColors:[[CPColor colorWithHexString:"273036"], [CPColor colorWithHexString:"293339"]]];
+                    [suggestTable setUsesAlternatingRowBackgroundColors:YES];
+                    [suggestTable setSelectionHighlightColor:[CPColor colorWithHexString:"3e474d"]];
                 }
 
                 // Wait for the window to finish animating
                 window.setTimeout(function(){
                    [[self contentView] addSubview:scrollview];
                 },170);
-
-                // Make calls to the Search API
-                [[ISGithubAPIController sharedController] repoSuggestWithSearchString:[repoNameField stringValue] callback:function(/*CPArray*/results){
-                    [suggestedReposController setContent:results];
-                }];
         }
+
+        // Make calls to the Search API
+        [[ISGithubAPIController sharedController] repoSuggestWithSearchString:[repoNameField stringValue] callback:function(/*CPArray*/results){
+            [suggestedReposController setContent:results];
+        }];
     }
     else
     {
@@ -261,8 +281,17 @@ var SharedNewRepoWindow = nil;
     if (![self _isValid])
         return;
 
-    var callback = function(aRepo, request)
+    var callback = function(aRepo, aRequest)
     {
+        [loadingIndicator setHidden:YES];
+        [repoNameField setEnabled:YES];
+
+        if (!aRequest.success())
+        {
+            [errorLabel setHidden:NO];
+            return;
+        }
+
         [repoController addRepository:aRepo select:YES];
         [self orderOutWithAnimation:sender];
 
@@ -274,6 +303,9 @@ var SharedNewRepoWindow = nil;
     }
 
     [[ISGithubAPIController sharedController] loadRepositoryWithIdentifier:[repoNameField stringValue] callback:callback];
+    [repoNameField setEnabled:NO];
+    [errorLabel setHidden:YES];
+    [loadingIndicator setHidden:NO];
 }
 
 - (@action)cancel:(id)sender
@@ -298,13 +330,23 @@ var SharedNewRepoWindow = nil;
 {
     if ([anEvent type] === CPKeyUp)
     {
+        var excludedKeys = [CPUpArrowKeyCode, CPDownArrowKeyCode];
+
         if ([anEvent keyCode] === CPEscapeKeyCode)
             [self cancel:self];
-        else if ([self firstResponder] !== repoNameField)
+        else if ([self firstResponder] !== repoNameField && ![excludedKeys containsObject:[anEvent keyCode]])
             [self makeFirstResponder:repoNameField];
     }
 
     [super sendEvent:anEvent];
+}
+
+- (void)_setRepoAndAdd:(id)sender
+{
+    var index = [[suggestTable selectedRowIndexes] firstIndex];
+    [repoNameField setStringValue:[[suggestedReposController contentArray][index] identifier]];
+
+    [self addRepo:sender];
 }
 
 @end

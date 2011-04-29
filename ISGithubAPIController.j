@@ -48,6 +48,10 @@ var APIURLWithString = function(/*CPString*/aString)
     CPImage  userImage;
     CPImage userThumbnailImage @accessors;
 
+    // This will prevent us from having to make more API calls for repo searching if we have a username given
+    CPString _cachedFirstSearchTerm;
+    CPArray  _cachedFirstSearchTermResults;
+
 }
 
 + (id)sharedController
@@ -109,7 +113,7 @@ var APIURLWithString = function(/*CPString*/aString)
     {
         if (isAuthenticated && oauthAccessToken)
         {
-            urlForCall += "/github/" + aCall + + startingArgument +"access_token=" + oauthAccessToken;
+            urlForCall += "/github/v3/" + aCall + + startingArgument +"access_token=" + oauthAccessToken;
             startingArgument = "&";
         }
     }
@@ -119,17 +123,110 @@ var APIURLWithString = function(/*CPString*/aString)
     return urlForCall;
 }
 
+/*!
+    We sometimes fall back to V2 of the API since V3 is still a work in progress.
+
+    If we're on the server 
+*/
+- (CPString)_urlForV2APICall:(CPString)aCall
+{
+    var isAuthenticated = [self isAuthenticated],
+        urlForCall = "",
+        startingArgument = aCall.indexOf("?") === CPNotFound ? "?" : "&";
+
+    if (window.location && window.location.protocol === "file:")
+    {
+        if (isAuthenticated)
+            urlForCall += "https://" + username + ":" + password + "@github.com/api/v2/json/" + aCall;
+        else
+            urlForCall += "https://github.com/api/v2/json/" + aCall;
+    }
+    else
+    {
+        if (isAuthenticated && oauthAccessToken)
+        {
+            urlForCall += "/github/v2/" + aCall + + startingArgument +"access_token=" + oauthAccessToken;
+            startingArgument = "&";
+        }
+    }
+
+    urlForCall += startingArgument + "app_id=280issues";
+
+    return urlForCall;
+}
+
+/*!
+    The auto suggest API call
+*/
 - (void)repoSuggestWithSearchString:(CPString)aSearchString callback:(Function)aCallback
 {
-    var results = [ [CPDictionary dictionaryWithObject:"280north/cappuccino"  forKey:"title"], 
-                    [CPDictionary dictionaryWithObject:"280north/issues"  forKey:"title"], 
-                    [CPDictionary dictionaryWithObject:"Me1000/githubissues"  forKey:"title"]
-                  ];
+    // This gets a little tricky because we want to reccoment both repos and users...
+    // we first need to parse the string. If There is a slash, we will just do a search
+    // on a single user's repo.
+    // Otherwise we search both.. I guess
 
-    // DO SOME SEARCHIGN!!!!
+    var indexOfSlash = aSearchString.indexOf("/");
 
-    if (aCallback)
-        aCallback(results);
+    if (indexOfSlash !== CPNotFound)
+    {
+        var firstTerm = [aSearchString substringToIndex:indexOfSlash],
+            secondTerm = [aSearchString substringFromIndex:indexOfSlash+1],
+            filter = function() {
+                var reply = [];
+  
+                for (var i = 0, c = _cachedFirstSearchTermResults.length; i < c; i++)
+                {
+                    if (!secondTerm || [[_cachedFirstSearchTermResults[i].name uppercaseString] hasPrefix:[secondTerm uppercaseString]])
+                        reply.push([ISRepository repositoryWithJSObject:_cachedFirstSearchTermResults[i]]);
+                }
+
+                if (aCallback)
+                    aCallback(reply);
+            }
+
+        // If only the 2nd term changed, we have it cached already! YAY!! :D
+        if (firstTerm === _cachedFirstSearchTerm && _cachedFirstSearchTermResults)
+            filter();
+        else
+        {
+            // at this point we know we have a username, so we're only searching one user's issues
+            var request = new CFHTTPRequest();
+            //        request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    
+            // We don't have a V3 for searching yet...
+            // V2 look like:
+            // http://github.com/api/v2/json/repos/show/[:USERNAME]
+    
+            request.open("GET", [self _urlForV2APICall:"repos/show/"+ encodeURIComponent(firstTerm)], true);
+    
+            // FIX ME: time stamp this request
+    
+            request.oncomplete = function()
+            {
+                if (request.success())
+                {
+                    try
+                    {
+                       _cachedFirstSearchTermResults = JSON.parse(request.responseText()).repositories;
+                    }
+                    catch(e)
+                    {
+                        console.log("unable to parse", e);
+                    }
+
+                    filter();
+                }
+            }
+            request.send("");
+        }
+
+        // CACHE IT!!!!
+        _cachedFirstSearchTerm = firstTerm;
+    }
+    else
+    {
+        // Just use aSearchString
+    }
 }
 
 - (void)authenticateWithCallback:(Function)aCallback
@@ -235,7 +332,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    request.open("GET", [self _urlForAPICall:"repos/"+anIdentifier+".json"], true);
+    request.open("GET", [self _urlForAPICall:"repos/"+encodeURIComponent(anIdentifier)+".json"], true);
 
     request.oncomplete = function()
     {
@@ -248,13 +345,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
                 data = JSON.parse(request.responseText());
 
-                newRepo = [repositoriesByIdentifier objectForKey:anIdentifier] || [[ISRepository alloc] init];
-
-                [newRepo setName:data.name];
-                [newRepo setIdentifier:anIdentifier];
-                [newRepo setIsPrivate:data["private"]];
-                [newRepo setNumberOfOpenIssues:data.open_issues];
-                [newRepo setIssuesAssignedToCurrentUser:0];
+                newRepo = [repositoriesByIdentifier objectForKey:anIdentifier] || [ISRepository repositoryWithJSObject:data];
 
                 if (![repositoriesByIdentifier objectForKey:anIdentifier])
                     [repositoriesByIdentifier setObject:newRepo forKey:anIdentifier];
@@ -263,6 +354,8 @@ var APIURLWithString = function(/*CPString*/aString)
                 CPLog.error("Unable to load repositority with identifier: "+anIdentifier+" -- "+e);
             }
         }
+        else
+            console.log("fail");
 
         if (aCallback)
             aCallback(newRepo, request);
