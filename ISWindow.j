@@ -209,7 +209,7 @@ var SharedNewRepoWindow = nil;
     {
         if (!CGSizeEqualToSize(currentFrame.size, CGSizeMake(381, 365)))
         {
-            
+
             var visible = [CPPlatform isBrowser] ? [[self platformWindow] visibleFrame] : [[[CPScreen alloc] init] visibleFrame],
                 realY = (currentFrame.origin.y + 364 > visible.size.height) ? visible.size.height - 364 : currentFrame.origin.y,
                 y = MAX(realY,0),
@@ -222,6 +222,7 @@ var SharedNewRepoWindow = nil;
                 if (!scrollview)
                 {
                     suggestedReposController = [[CPArrayController alloc] init];
+                    [suggestedReposController setAvoidsEmptySelection:NO];
 
                     // FIX ME: use HUD style.
                     scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(11, 100, 356, 200)];
@@ -330,7 +331,7 @@ var SharedNewRepoWindow = nil;
     var slashPosition =  [repoNameField stringValue].indexOf("/");
         enabled = ([[repoNameField stringValue] length] > 2 && slashPosition !== CPNotFound && slashPosition !== 0 && slashPosition !== [[repoNameField stringValue] length] -1);
 
-    return enabled;    
+    return enabled;
 }
 
 - (void)sendEvent:(CPEvent)anEvent
