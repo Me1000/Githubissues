@@ -326,13 +326,49 @@ var APIURLWithString = function(/*CPString*/aString)
             }
 }
 
+- (void)loadAllReposForUser:(CPString)aUserLogin callback:(Function)aCallback
+{
+    // at this point we know we have a username, so we're only searching one user's issues
+    var request = new CFHTTPRequest();
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    
+    // We don't have a V3 for searching yet...
+    // V2 look like:
+    // http://github.com/api/v2/json/repos/show/[:USERNAME]
+    
+    request.open("GET", [self _urlForV2APICall:"repos/show/"+ encodeURIComponent(aUserLogin)], true);
+    
+    request.oncomplete = function()
+    {
+        if (request.success())
+        {
+            try
+            {
+                var results = JSON.parse(request.responseText()).repositories,
+                    i = 0,
+                    c = results.length;
+
+                for (; i < c; i++)
+                    [self loadRepositoryWithIdentifier:results[i].owner +"/"+results[i].name callback:aCallback];
+            }
+            catch(e){console.log("oops", e);}
+        }
+    }
+    request.send("");
+}
+
 - (void)loadRepositoryWithIdentifier:(CPString)anIdentifier callback:(Function)aCallback
 {
     var request = new CFHTTPRequest();
 
     // Use V3 of the Github API
     request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    request.open("GET", [self _urlForAPICall:"repos/"+encodeURIComponent(anIdentifier)+".json"], true);
+
+    var parts = anIdentifier.split("/");
+    if ([parts count] > 2)
+        anIdentifier = parts.slice(0, 2).join("/");
+
+    request.open("GET", [self _urlForAPICall:"repos/"+anIdentifier+".json"], true);
 
     request.oncomplete = function()
     {

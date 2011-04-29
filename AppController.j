@@ -30,7 +30,7 @@
     @outlet CPView      mainContentView;
     @outlet CPSplitView verticalSplitView;
 
-    @outlet ISRepositoriesController reposController;
+    @outlet ISRepositoriesController reposController @accessors(readonly);
     @outlet ISModel     model @accessors;
 }
 

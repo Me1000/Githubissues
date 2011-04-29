@@ -18,6 +18,8 @@ var octocatImage = nil;
     @outlet CPTextField accountNameField;
     @outlet CPTextField loggedInAsField;
     @outlet CPButton    loginButton;
+
+    @outlet CPPopUpButton detailsButton;
 }
 
 - (void)awakeFromCib
@@ -61,8 +63,20 @@ var octocatImage = nil;
                                                  name:CPUserSessionManagerStatusDidChangeNotification 
                                                object:nil];
 
+    [detailsButton setFrameSize:CGSizeMake(10,10)];
+    [detailsButton setValue:[CPColor colorWithPatternImage:resourcesImage("FIXME_arrowdown.png", 10, 10)] forThemeAttribute:"bezel-color"];
+
     [self loginStatusDidChange:nil];
 
+}
+
+- (@action)addOwnRepos:(id)sender
+{
+    var controller = [ISGithubAPIController sharedController];
+
+    [controller loadAllReposForUser:[controller username] callback:function(aRepo, aRequest){
+        [[[CPApp delegate] reposController] addRepository:aRepo select:NO];
+    }];
 }
 
 - (@action)toggleLogin:(id)sender
@@ -79,8 +93,15 @@ var octocatImage = nil;
     {
         [loggedInAsField setStringValue:"Logged in as"];
         [accountNameField setStringValue:[githubController username]];
+        [accountNameField sizeToFit];
+
         [avatarView setImage:[githubController userThumbnailImage]];
         [loginButton setTitle:"Logout"];
+
+        var frame = [accountNameField frame];
+
+        [detailsButton setFrameOrigin:CGPointMake(CGRectGetMaxX(frame) + 2, CGRectGetMinY(frame) + 2)];
+        [detailsButton setHidden:NO];
 
         var defaults = [CPUserDefaults standardUserDefaults];
         [defaults setObject:[githubController username] forKey:"username"];
@@ -88,6 +109,7 @@ var octocatImage = nil;
     }
     else
     {
+        [detailsButton setHidden:YES];
         [loggedInAsField setStringValue:"Not logged in"];
         [accountNameField setStringValue:""];
         [avatarView setImage:octocatImage];
