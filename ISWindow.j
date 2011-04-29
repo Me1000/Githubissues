@@ -218,7 +218,6 @@ var SharedNewRepoWindow = nil;
                 if (!scrollview)
                 {
                     suggestedReposController = [[CPArrayController alloc] init];
-//                    [suggestedReposController setContent:];
 
                     // FIX ME: use HUD style.
                     scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(22, 100, 338, 200)];
@@ -244,16 +243,16 @@ var SharedNewRepoWindow = nil;
                     [scrollview setHasHorizontalScroller:NO];
                     [scrollview setAutohidesScrollers:YES];
 
-//                    [suggestTable setSelectionHighlightColor:];
                     [suggestTable setAlternatingRowBackgroundColors:[[CPColor colorWithHexString:"273036"], [CPColor colorWithHexString:"293339"]]];
                     [suggestTable setUsesAlternatingRowBackgroundColors:YES];
                     [suggestTable setSelectionHighlightColor:[CPColor colorWithHexString:"3e474d"]];
+                    [suggestTable setAllowsEmptySelection:YES];
                 }
 
                 // Wait for the window to finish animating
                 window.setTimeout(function(){
                    [[self contentView] addSubview:scrollview];
-                },170);
+                },200);
         }
 
         // Make calls to the Search API
@@ -330,19 +329,38 @@ var SharedNewRepoWindow = nil;
 {
     if ([anEvent type] === CPKeyUp)
     {
+console.log(anEvent, [anEvent keyCode]);
         var excludedKeys = [CPUpArrowKeyCode, CPDownArrowKeyCode];
 
         if ([anEvent keyCode] === CPEscapeKeyCode)
             [self cancel:self];
+        else if ([anEvent keyCode] === CPReturnKeyCode)
+        {
+            var sender = [self firstResponder];
+
+            if (sender === suggestTable)
+                [self _setRepoAndAdd:sender];
+            else
+                [self addRepo:sender];
+
+            // prevent the call to super
+            return;
+        }
         else if ([self firstResponder] !== repoNameField && ![excludedKeys containsObject:[anEvent keyCode]])
             [self makeFirstResponder:repoNameField];
+        else if ([excludedKeys containsObject:[anEvent keyCode]])
+            [self makeFirstResponder:suggestTable];
     }
+
+    // FIX ME: this is broked.
+    [submitButton setEnabled:([self _isValid] || [self firstResponder] === suggestTable)];
 
     [super sendEvent:anEvent];
 }
 
 - (void)_setRepoAndAdd:(id)sender
 {
+console.log("bam")
     var index = [[suggestTable selectedRowIndexes] firstIndex];
     [repoNameField setStringValue:[[suggestedReposController contentArray][index] identifier]];
 
