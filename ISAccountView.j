@@ -57,7 +57,6 @@ var octocatImage = nil;
     [loggedInAsField setFrameSize:size];
 
     [avatarView setBackgroundColor:[CPColor colorWithPatternImage:resourcesImage("userViewImageBackground-large.png", 44, 44)]];
-console.log(avatarView);
 
     [[CPNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(loginStatusDidChange:) 

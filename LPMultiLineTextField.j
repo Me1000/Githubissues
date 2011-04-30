@@ -49,6 +49,8 @@ var CPTextFieldInputOwner = nil;
         _DOMTextareaElement.style.resize = @"none";
         _DOMTextareaElement.style.padding = @"0";
         _DOMTextareaElement.style.margin = @"0";
+
+        _DOMTextareaElement.className = "sexyScrollbars";
         
         _DOMTextareaElement.onblur = function(){
                 [[CPTextFieldInputOwner window] makeFirstResponder:nil];
@@ -104,6 +106,7 @@ var CPTextFieldInputOwner = nil;
     DOMElement.style.color = [[self currentValueForThemeAttribute:@"text-color"] cssString];
     DOMElement.style.font = [[self currentValueForThemeAttribute:@"font"] cssString];
     DOMElement.value = _stringValue || @"";
+
 }
 
 - (void)mouseDown:(CPEvent)anEvent
@@ -155,6 +158,13 @@ var CPTextFieldInputOwner = nil;
     }
  
     [[[self window] platformWindow] _propagateCurrentDOMEvent:YES];
+}
+
+- (void)scrollWheel:(CPEvent)anEvent
+{
+    var DOMElement = [self _DOMTextareaElement];
+    DOMElement.scrollLeft += anEvent._deltaX;
+    DOMElement.scrollTop += anEvent._deltaY;
 }
 
 - (BOOL)becomeFirstResponder

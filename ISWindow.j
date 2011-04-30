@@ -7,6 +7,7 @@
 
 var WindowBackground = nil,
     DetachedWindowBackground = nil,
+    ContentBackgroundColor = nil,
     GreenButtonColor = nil,
     GreenButtonDownColor = nil,
     RedButtonColor = nil,
@@ -81,6 +82,18 @@ var WindowBackground = nil,
         resourcesImage("green-button-disabled-1.png", 2, 23),
         resourcesImage("green-button-disabled-2.png", 13, 23)
     ] isVertical:NO]];
+
+    BlueButtonColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("blue-button-0.png", 13, 23),
+        resourcesImage("blue-button-1.png", 2, 23),
+        resourcesImage("blue-button-2.png", 13, 23)
+    ] isVertical:NO]];
+
+    BlueButtonDownColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("blue-button-down-0.png", 13, 23),
+        resourcesImage("blue-button-down-1.png", 2, 23),
+        resourcesImage("blue-button-down-2.png", 13, 23)
+    ] isVertical:NO]];
 }
 
 - (void)awakeFromCib
@@ -105,6 +118,55 @@ var WindowBackground = nil,
     return self;
 }
 
+
+- (void)styleButton:(CPButton)aButton withColor:(CPString)aColor
+{
+    switch (aColor)
+    {
+        case "red":
+            var textColor = [CPColor whiteColor],
+                shadowColor = [CPColor blackColor],
+                bezel = RedButtonColor,
+                bezelDown = RedButtonDownColor,
+                bezelDisabled = RedButtonColor,
+                disabledText = textColor,
+                disabledShadow = shadowColor,
+                font = [CPFont boldSystemFontOfSize:11];
+            break;
+
+        case "green":
+            var textColor = [CPColor whiteColor],
+                shadowColor = [CPColor blackColor],
+                bezel = GreenButtonColor,
+                bezelDown = GreenButtonDownColor,
+                bezelDisabled = GreenButtonDisabledColor,
+                disabledText = [CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1],
+                disabledShadow = [CPColor colorWithRed:1 green:1 blue:1 alpha:.2],
+                font = [CPFont boldSystemFontOfSize:11];
+            break;
+
+        case "blue":
+            var textColor = [CPColor whiteColor],
+                shadowColor = [CPColor blackColor],
+                bezel = BlueButtonColor,
+                bezelDown = BlueButtonDownColor,
+                bezelDisabled = BlueButtonColor,
+                disabledText = [CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1],
+                disabledShadow = [CPColor colorWithRed:1 green:1 blue:1 alpha:.2],
+                font = [CPFont boldSystemFontOfSize:11];
+            break;
+    }
+
+    [aButton setValue:bezel forThemeAttribute:"bezel-color"];
+    [aButton setValue:bezelDown forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
+    [aButton setValue:bezelDisabled forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
+
+    [aButton setValue:textColor forThemeAttribute:"text-color"];
+    [aButton setValue:shadowColor forThemeAttribute:"text-shadow-color"];
+    [aButton setValue:disabledText forThemeAttribute:"text-color" inState:CPThemeStateBordered|CPThemeStateDisabled];
+    [aButton setValue:disabledShadow forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
+    [aButton setValue:font forThemeAttribute:"font"];
+}
 @end
 
 
@@ -155,23 +217,8 @@ var SharedNewRepoWindow = nil;
     [repoNameField setValue: CGInsetMake(2.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset"];
     [repoNameField setValue: CGInsetMake(0.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset" inState:CPThemeStateEditing|CPThemeStateBezeled];
 
-
-    [submitButton setValue:GreenButtonColor forThemeAttribute:"bezel-color"];
-    [submitButton setValue:GreenButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-    [submitButton setValue:GreenButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
-
-    [submitButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
-    [submitButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
-    [submitButton setValue:[CPColor colorWithRed:59/255 green:89/255 blue:49/255 alpha:1] forThemeAttribute:"text-color" inState:CPThemeStateBordered|CPThemeStateDisabled];
-    [submitButton setValue:[CPColor colorWithRed:1 green:1 blue:1 alpha:.2] forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
-    [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
-
-    [cancelButton setValue:RedButtonColor forThemeAttribute:"bezel-color"];
-    [cancelButton setValue:RedButtonDownColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-    //[cancelButton setValue:RedButtonDisabledColor forThemeAttribute:"bezel-color" inState:CPThemeStateDisabled];
-    [cancelButton setValue:[CPColor whiteColor] forThemeAttribute:"text-color"];
-    [cancelButton setValue:[CPColor blackColor] forThemeAttribute:"text-shadow-color"];
-    [submitButton setValue:[CPFont boldSystemFontOfSize:11] forThemeAttribute:"font"];
+    [self styleButton:submitButton withColor:"green"];
+    [self styleButton:cancelButton withColor:"red"];
 
     [repoNameField setDelegate:self];
 
@@ -268,11 +315,10 @@ var SharedNewRepoWindow = nil;
     }
     else
     {
+        [scrollview removeFromSuperview];
+
         if (!CGSizeEqualToSize(currentFrame.size, CGSizeMake(381,161)))
-        {
-            [scrollview removeFromSuperview];
             [self setFrame:CGRectMake(currentFrame.origin.x, currentFrame.origin.y, 381,161) display:YES animate:YES];
-        }
     }
 }
 
@@ -381,13 +427,108 @@ var SharedNewRepoWindow = nil;
 */
 @implementation ISNewIssueWindow : ISWindow
 {
+    @outlet CPView      containerView;
+
     @outlet CPTextField titleField;
-    @outlet CPPopUpButton repoField;
+    @outlet CPPopUpButton repoField @accessors(readonly);
     @outlet LPMultiLineTextField bodyField;
 
     @outlet CPButton saveButton;
     @outlet CPButton cancelButton;
     @outlet CPButton previewButton;
+
+    @outlet CPImageView titleIconView;
+    @outlet CPImageView repoIconView;
+    @outlet CPImageView bodyIconView;
+}
+
++ (void)initialize
+{
+    var nineprtimg = [[CPNinePartImage alloc] initWithImageSlices:[
+        resourcesImage("windows/newissuebg-0.png", 27, 83),
+        resourcesImage("windows/newissuebg-1.png", 19, 83),
+        resourcesImage("windows/newissuebg-2.png", 27, 83),
+
+        resourcesImage("windows/newissuebg-3.png", 27, 24),
+        resourcesImage("windows/newissuebg-4.png", 19, 24),
+        resourcesImage("windows/newissuebg-5.png", 27, 24),
+
+        resourcesImage("windows/newissuebg-6.png", 27, 28),
+        resourcesImage("windows/newissuebg-7.png", 19, 28),
+        resourcesImage("windows/newissuebg-8.png", 27, 28),
+    ]];
+
+    ContentBackgroundColor = [CPColor colorWithPatternImage:nineprtimg];
+}
+
+- (void)awakeFromCib
+{
+    [super awakeFromCib];
+
+    [self styleButton:saveButton withColor:"green"];
+    [self styleButton:cancelButton withColor:"red"];
+    [self styleButton:previewButton withColor:"blue"];
+
+    [containerView setBackgroundColor:ContentBackgroundColor];
+
+    [titleField setValue:[CPColor colorWithHexString:"a3b3bf"] forThemeAttribute:"text-color" inState:CPTextFieldStatePlaceholder];
+    [titleField setValue:[CPColor clearColor] forThemeAttribute:"text-shadow-color" inState:CPTextFieldStatePlaceholder];
+    [titleField setValue:[CPColor whiteColor] forThemeAttribute:"text-shadow-color"];
+    [titleField setValue:CGSizeMake(1,1) forThemeAttribute:"text-shadow-offset"];
+
+    [titleIconView setImage:resourcesImage("title-icon.png", 13, 13)];
+    [repoIconView setImage:resourcesImage("repo-icon.png", 13, 13)];
+    [bodyIconView setImage:resourcesImage("body-icon.png", 13, 13)];
+
+    repoPattern = [[CPThreePartImage alloc] initWithImageSlices:[resourcesImage("blank.png", 1,1), resourcesImage("blank.png", 1,1), resourcesImage("popup-arrow-2.png", 22, 24)] isVertical:NO];
+    [repoField setValue:[CPColor colorWithPatternImage:repoPattern] forThemeAttribute:"bezel-color"];
+    [repoField setValue:[CPColor colorWithHexString:"4c5b66"] forThemeAttribute:"text-color"];
+
+    [bodyField setValue:[CPColor colorWithHexString:"4c5b66"] forThemeAttribute:"text-color"];
+    [bodyField setEditable:YES];
+    [bodyField setEnabled:YES];
+
+    [saveButton setEnabled:NO];
+}
+
+- (void)setRepos:(CPArray)repos
+{
+    var titles = [],
+        i = 0,
+        c = repos.length;
+
+    for (; i < c; i++)
+        titles.push([repos[i] identifier]);
+
+
+    [repoField addItemsWithTitles:titles];
+}
+
+- (void)windowDidMove:(CPNotification)aNote
+{
+    [[self contentView] setBackgroundColor:DetachedWindowBackground];
 }
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -21,6 +21,8 @@
 @import "ISIssueDataView.j"
 @import "ISModel.j"
 @import "ISLoadingIndicator.j"
+@import "LPMultiLineTextField.j"
+@import "ISNewIssueWindowController.j"
 
 @implementation AppController : CPObject
 {
@@ -56,7 +58,6 @@
 
     // Load any saved settings.
     [model load];
-
 }
 
 - (void)awakeFromCib
@@ -107,6 +108,13 @@
     [[ISNewRepoWindow sharedWindow] showWindow:aSender];
 }
 
+- (@action)newIssue:(id)sender
+{
+    var newIssueWindow = [[ISNewIssueWindowController alloc] initWithWindowCibName:"NewIssueWindow"];
+    [newIssueWindow setRepos:[reposController arrangedObjects]];
+    [newIssueWindow showWindow:sender];
+    [newIssueWindow selectRepo:[reposController selectedObjects][0]];
+}
 
 // Main splitview delegates
 - (void)sourceListDidResize:(CPNotification)aNote
