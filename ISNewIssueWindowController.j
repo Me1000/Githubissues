@@ -24,6 +24,8 @@
     // this has to be done here because the window posts the didMove
     // notification when we change the origin point.
     [win setDelegate:win];
+
+    [sender bind:"enabled" toObject:win withKeyPath:"isDetached" options:nil];
 }
 
 - (void)setRepos:(CPArray)theRepos
@@ -51,9 +53,17 @@
 {
 
 }
+
 - (@action)preview:(id)sender
 {
 
+}
+
+- (@action)openInNewPlatformWindow:(id)sender
+{
+//    var win = [self window];
+
+//    var newPlatform = 
 }
 
 @end

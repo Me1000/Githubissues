@@ -16,7 +16,9 @@ var WindowBackground = nil,
     RedButtonDisabledColor = nil;
 
 @implementation ISWindow : CPWindow
-
+{
+    BOOL isDetached @accessors;
+}
 + (void)initialize
 {
     WindowBackground = [CPColor colorWithPatternImage:[[CPNinePartImage alloc] initWithImageSlices:[
@@ -98,7 +100,7 @@ var WindowBackground = nil,
 
 - (void)awakeFromCib
 {
-    [[self contentView] setBackgroundColor:WindowBackground];
+    [self setIsDetached:NO];
 }
 
 - (id)initWithContentRect:(CGRect)aRect
@@ -166,6 +168,19 @@ var WindowBackground = nil,
     [aButton setValue:disabledText forThemeAttribute:"text-color" inState:CPThemeStateBordered|CPThemeStateDisabled];
     [aButton setValue:disabledShadow forThemeAttribute:"text-shadow-color" inState:CPThemeStateDisabled];
     [aButton setValue:font forThemeAttribute:"font"];
+}
+
+- (void)setIsDetached:(BOOL)aFlag
+{
+    if (isDetached === aFlag)
+        return;
+
+    isDetached = !!aFlag;
+
+    if (isDetached)
+        [[self contentView] setBackgroundColor:DetachedWindowBackground];
+    else
+        [[self contentView] setBackgroundColor:WindowBackground];
 }
 @end
 
@@ -235,15 +250,13 @@ var SharedNewRepoWindow = nil;
     origin.x -= 52;
 
     [self setFrameOrigin:origin];
-
-    [[self contentView] setBackgroundColor:WindowBackground];
-
     [self setAnimationLocation:"15% 0%"];
     [self setAnimationLength:"170"];
     [self orderFontWithAnimation:sender];
     [self makeKeyWindow];
 
     [submitButton setEnabled:NO];
+    [self setIsDetached:NO];
 }
 
 - (void)controlTextDidChange:(CPNotification)aNote
@@ -324,7 +337,7 @@ var SharedNewRepoWindow = nil;
 
 - (void)windowDidMove:(CPNotification)aNote
 {
-    [[self contentView] setBackgroundColor:DetachedWindowBackground];
+    [self setIsDetached:YES];
 }
 
 - (@action)addRepo:(id)sender
@@ -440,6 +453,10 @@ var SharedNewRepoWindow = nil;
     @outlet CPImageView titleIconView;
     @outlet CPImageView repoIconView;
     @outlet CPImageView bodyIconView;
+
+
+    @outlet CPImageView divImage;
+    @outlet CPButton newWindowButton;
 }
 
 + (void)initialize
@@ -468,6 +485,9 @@ var SharedNewRepoWindow = nil;
     [self styleButton:saveButton withColor:"green"];
     [self styleButton:cancelButton withColor:"red"];
     [self styleButton:previewButton withColor:"blue"];
+    [self styleButton:newWindowButton withColor:"blue"];
+
+    [newWindowButton setImage:resourcesImage("newwindow-image.png", 18, 13)];
 
     [containerView setBackgroundColor:ContentBackgroundColor];
 
@@ -478,6 +498,7 @@ var SharedNewRepoWindow = nil;
 
     [titleIconView setImage:resourcesImage("title-icon.png", 13, 13)];
     [repoIconView setImage:resourcesImage("repo-icon.png", 13, 13)];
+    [bodyIconView setImage:resourcesImage("body-icon.png", 13, 13)];
     [bodyIconView setImage:resourcesImage("body-icon.png", 13, 13)];
 
     repoPattern = [[CPThreePartImage alloc] initWithImageSlices:[resourcesImage("blank.png", 1,1), resourcesImage("blank.png", 1,1), resourcesImage("popup-arrow-2.png", 22, 24)] isVertical:NO];
@@ -506,7 +527,7 @@ var SharedNewRepoWindow = nil;
 
 - (void)windowDidMove:(CPNotification)aNote
 {
-    [[self contentView] setBackgroundColor:DetachedWindowBackground];
+    [self setIsDetached:YES];
 }
 
 @end
