@@ -9,7 +9,7 @@
 
     var pt = [sender bounds],
         pt = [sender  convertRect:pt toView:nil],
-        origin = CGPointMake(CGRectGetMidX(pt), CGRectGetMidY(pt)),
+        origin = CGPointMake(CGRectGetMidX(pt), CGRectGetMidY(pt) + 3),
         win = [self window];
 
     // offset for the spiky thing

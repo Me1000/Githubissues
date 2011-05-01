@@ -19,6 +19,15 @@
     @outlet CPButton openIssuesButton;
     @outlet CPButton closedIssuesButton;
 
+    @outlet CPButton newIssueButton;
+    @outlet CPButton tagsButton;
+    @outlet CPButton assigneeButton;
+    @outlet CPButton milestoneButton;
+
+    @outlet CPButton closeButton;
+    @outlet CPButton reopenButton;
+    @outlet CPButton reloadButton;
+
 
             BOOL openIssuesSelected @accessors;
 
@@ -50,7 +59,21 @@
     [openIssuesButton setValue:[CPColor colorWithRed:0 green:0 blue:0 alpha:.2] forThemeAttribute:"text-shadow-color"];
     [openIssuesButton setValue:CGSizeMake(0,1) forThemeAttribute:"text-shadow-offset"];
 
+    [self _styleButton:newIssueButton withImage:"add-button"];
+    [self _styleButton:tagsButton withImage:"label-button"];
+    [self _styleButton:assigneeButton withImage:"assignee-button"];
+    [self _styleButton:milestoneButton withImage:"milestone-button"];
 
+    [self _styleButton:closeButton withImage:"close-button"];
+    [self _styleButton:reopenButton withImage:"reopen-button"];
+    [self _styleButton:reloadButton withImage:"reload-button"];
+}
+
+- (void)_styleButton:(CPButton)aButton withImage:(CPString)anImageLocation
+{
+    [aButton setImage:resourcesImage(anImageLocation+".png", 28, 29)];
+    [aButton setAlternateImage:resourcesImage(anImageLocation+"-down.png", 28, 29)];
+    [aButton setBordered:NO];
 }
 
 - (void)splitViewMovedTo:(float)aPosition
