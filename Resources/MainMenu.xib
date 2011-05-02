@@ -857,6 +857,7 @@
 									<string key="NSFrame">{{591, 3}, {28, 29}}</string>
 									<reference key="NSSuperview" ref="12261708"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="752776604"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSButtonCell" key="NSCell" id="599105018">
 										<int key="NSCellFlags">67239424</int>
@@ -879,7 +880,7 @@
 									<string key="NSFrame">{{539, 3}, {28, 29}}</string>
 									<reference key="NSSuperview" ref="12261708"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
+									<reference key="NSNextKeyView" ref="469391197"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSButtonCell" key="NSCell" id="950223880">
 										<int key="NSCellFlags">67239424</int>
@@ -1561,7 +1562,7 @@
 													<reference key="NSNextKeyView"/>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSSearchFieldCell" key="NSCell" id="1060774867">
-														<int key="NSCellFlags">343014976</int>
+														<int key="NSCellFlags">343539264</int>
 														<int key="NSCellFlags2">268436544</int>
 														<string key="NSContents"/>
 														<reference key="NSSupport" ref="918278588"/>
@@ -1630,6 +1631,7 @@
 															<int key="NSPeriodicInterval">75</int>
 														</object>
 														<int key="NSMaximumRecents">255</int>
+														<bytes key="NSSearchFieldFlags">CAAAAA</bytes>
 													</object>
 												</object>
 											</object>
@@ -3488,6 +3490,22 @@
 						<reference key="destination" ref="766586040"/>
 					</object>
 					<int key="connectionID">704</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="864775333"/>
+						<reference key="destination" ref="710866985"/>
+					</object>
+					<int key="connectionID">705</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">searchDidChange:</string>
+						<reference key="source" ref="710866985"/>
+						<reference key="destination" ref="864775333"/>
+					</object>
+					<int key="connectionID">706</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -5835,7 +5853,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">704</int>
+			<int key="maxID">706</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6148,9 +6166,11 @@
 							<string>_label:</string>
 							<string>_toggleLabel:</string>
 							<string>newLabel:</string>
+							<string>searchDidChange:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -6165,6 +6185,7 @@
 							<string>_label:</string>
 							<string>_toggleLabel:</string>
 							<string>newLabel:</string>
+							<string>searchDidChange:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -6182,6 +6203,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">newLabel:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">searchDidChange:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

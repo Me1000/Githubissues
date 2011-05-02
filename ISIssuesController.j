@@ -15,7 +15,7 @@
 {
             ISRepository activeRepository @accessors;
 
-            CPArray filteredIssues;
+//            CPArray filteredIssues;
 
     @outlet CPView containerView;
     @outlet ISSortBar sortBar;
@@ -81,12 +81,15 @@
         [issuesList addTableColumn:col];
 
         [issuesList sizeLastColumnToFit];
+
+        [col bind:CPValueBinding toObject:self withKeyPath:"arrangedObjects" options:nil];
+//        [self bind: toObject: withKeyPath: options:]
     }
 
     if (!activeRepository)
     {
         // Make sure the table knows we have 0 rows now.
-        [issuesList reloadData];
+        [self setContent:[]];
         return;
     }
 
@@ -98,24 +101,31 @@
 
         // FIX ME: find the currently selected item
         // Then after the reload call reselect that item if it still exists.
-        [issuesList reloadData];
+        //[issuesList reloadData];
+        [self setContent:issues];
     }
     else
         [[ISGithubAPIController sharedController] loadIssuesForRepository:activeRepository state:visisbleIssuesKey callback:nil];
 }
 
-- (void)searchDidChange:(id)sender
+- (@action)searchDidChange:(id)sender
 {
+console.log("SENT:",[sender stringValue]);
+    if (![sender stringValue])
+    {
+        [self setFilterPredicate:nil];
+        return;
+    }
     // FIX ME: filter the issues
+    var filter = [CPPredicate predicateWithFormat:"title=%@", [sender stringValue]];
+console.log("change something",filter);
+    [self setFilterPredicate:filter];
 }
 
+// FIX ME: maybe we should just call setSortDescriptors: directly
 - (void)sortDescriptorsDidChange:(CPArray)newSortDescriptors
 {
-    console.log("bam",newSortDescriptors);
-
-    [[activeRepository valueForKey:visisbleIssuesKey] sortUsingDescriptors:newSortDescriptors];
-    [issuesList setSortDescriptors:newSortDescriptors];
-    [issuesList reloadData];
+    [self setSortDescriptors:newSortDescriptors];
 }
 
 - (void)setActiveRepository:(ISRepository)aRepo
@@ -124,6 +134,7 @@
     [activeRepository removeObserver:self forKeyPath:visisbleIssuesKey];
 
     activeRepository = aRepo;
+    [self setContent:[activeRepository valueForKey:visisbleIssuesKey]];
 
     //Add a new observer
     [activeRepository addObserver:self forKeyPath:visisbleIssuesKey options:nil context:nil];
@@ -158,7 +169,7 @@
 
     var assignees = [activeRepository collaboratorNames],
         count = [assignees count];
-console.log(assignees);
+
 //    if (count)
 //        [menu addItem:[CPMenuItem separatorItem]];
 
@@ -247,7 +258,7 @@ console.log(assignees);
 }
 
 
-- (int)numberOfRowsInTableView:(CPTableView)aTable
+- (int)nuddmberOfRowsInTableView:(CPTableView)aTable
 {
     if (!activeRepository)
         return 0;
@@ -258,7 +269,7 @@ console.log(assignees);
     return [[activeRepository valueForKey:visisbleIssuesKey] count] || 0;
 }
 
-- (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
+- (id)tddableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
     if (!activeRepository)
         return nil;
