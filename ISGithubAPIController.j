@@ -399,7 +399,10 @@ var APIURLWithString = function(/*CPString*/aString)
             aCallback(newRepo, request);
 
         if (newRepo)
+        {
             [self loadLabelsForRepository:newRepo];
+            [self loadCollboratorsForRepository:newRepo];
+        }
 
         [[CPRunLoop currentRunLoop] performSelectors];
     }
@@ -572,6 +575,34 @@ var APIURLWithString = function(/*CPString*/aString)
     request.send("");*/
 }
 
+/*!
+    Collaborators are also assignees 
+*/
+- (void)loadCollboratorsForRepository:(ISRepository)aRepo
+{
+    //repos/show/:user/:repo/contributors
+
+    var request = new CFHTTPRequest();
+
+    request.open("POST", [self _urlForV2APICall:"repos/show/" + [aRepo identifier] + "/contributors"], true);
+
+    request.oncomplete = function()
+    {
+        var newIssue = nil;
+
+        if (request.success())
+        {
+            try
+            {
+                var data = JSON.parse(request.responseText()).contributors;
+
+                [aRepo setCollaborators:data];
+            }catch(e){}
+        }
+    }
+
+    request.send("");
+}
 
 - (void)createIssue:(CPDictionary)anIssue withCallback:(id)aCallback
 {
@@ -585,7 +616,7 @@ var APIURLWithString = function(/*CPString*/aString)
      "milestone"=>"Integer Milestone number",
      "labels"=>["Label1", "Label2"]}*/
 
- var request = new CFHTTPRequest();
+    var request = new CFHTTPRequest();
 
 // FIX ME: github is broked
     if (window.location && window.location.protocol === "file:" && username && password)

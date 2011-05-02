@@ -69,8 +69,15 @@
     [self _styleButton:reloadButton withImage:"reload-button"];
 }
 
+- (void)_assigneesDidChange:(CPNotification)aNote
+{
+    [assigneeButton removeAllItems];
+    [assigneeButton addItemsWithTitles:[[aNote object] collaboratorNames]];
+}
+
 - (void)_styleButton:(CPButton)aButton withImage:(CPString)anImageLocation
 {
+    [aButton setFrameSize:CGSizeMake(28, 29)];
     [aButton setImage:resourcesImage(anImageLocation+".png", 28, 29)];
     [aButton setAlternateImage:resourcesImage(anImageLocation+"-down.png", 28, 29)];
     [aButton setBordered:NO];

@@ -27,6 +27,8 @@
 
     CPArray     open @accessors;
     CPArray     closed @accessors;
+    CPArray     collaborators;
+    CPArray     collaboratorNames @accessors(readonly);
 }
 
 + (CPSet)keyPathsForValuesAffectingSidebarRepresentation
@@ -65,6 +67,18 @@
 {
     [open addObject:anIssue];
     [self setNumberOfOpenIssues:numberOfOpenIssues + 1];
+}
+
+- (void)setCollaborators:(CPArray)newCollabs
+{
+    collaborators = [];
+    collaboratorNames = [];
+
+    for (var i = 0, c = newCollabs.length; i < c; i++)
+    {
+        collaborators.push([CPDictionary dictionaryWithJSObject:newCollabs[i] recursively:YES]);
+        collaboratorNames.push(newCollabs[i].login);
+    }
 }
 
 /*!

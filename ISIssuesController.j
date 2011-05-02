@@ -139,6 +139,101 @@
     [self _showIssues];
 }
 
+/*!
+    Sent by the assignee button
+*/
+- (@action)_assignee:(id)sender
+{
+    [CPMenu popUpContextMenu:[self _assigneesMenu] withEvent:[CPApp currentEvent] forView:sender];
+}
+
+- (void)_assigneesMenu
+{
+    var menu = [[CPMenu alloc] init];
+//        newItem = [[CPMenuItem alloc] initWithTitle:@"New Tag" action:@selector(newTag:) keyEquivalent:nil];
+
+//    [newItem setTarget:self];
+
+//    [menu addItem:newItem];
+
+    var assignees = [activeRepository collaboratorNames],
+        count = [assignees count];
+console.log(assignees);
+//    if (count)
+//        [menu addItem:[CPMenuItem separatorItem]];
+
+    for (var i = 0; i < count; i++)
+    {
+        var assignee = assignees[i],
+            item = [[CPMenuItem alloc] initWithTitle:assignee action:@selector(_toggleTag:) keyEquivalent:nil];
+
+        if (assignee.isUsed)
+            [item setState:CPOnState];
+
+        [item setTarget:self];
+//        [item setTag:tag];
+        [menu addItem:item];
+    }
+
+    return menu;
+}
+
+
+- (@action)_label:(id)aSender
+{
+    var toolbarView = [[aSender toolbar] _toolbarView],
+        view = [toolbarView viewForItem:aSender];
+
+    [CPMenu popUpContextMenu:[self _labelsMenu] withEvent:[CPApp currentEvent] forView:view];
+}
+
+- (CPMenu)_labelsMenu
+{
+    var menu = [[CPMenu alloc] init],
+        newItem = [[CPMenuItem alloc] initWithTitle:@"New Label" action:@selector(newLabel:) keyEquivalent:nil];
+
+    [newItem setTarget:self];
+
+    [menu addItem:newItem];
+
+    var tags = [self tagsForSelectedIssue],
+        count = [tags count];
+
+    if (count)
+        [menu addItem:[CPMenuItem separatorItem]];
+
+    for (var i = 0; i < count; i++)
+    {
+        var label = label[i],
+            item = [[CPMenuItem alloc] initWithTitle:tag.label action:@selector(_toggleLabel:) keyEquivalent:nil];
+
+        if (label.isUsed)
+            [item setState:CPOnState];
+
+        [item setTarget:self];
+        [item setTag:label];
+        [menu addItem:item];
+    }
+
+    return menu;
+}
+
+- (@action)newLabel:(id)aSender
+{
+    // FIX ME:
+    alert("DO THIS");
+    //[[[NewTagController alloc] init] showWindow:self];
+}
+
+- (@action)_toggleLabel:(id)aSender
+{
+    // FIX ME: this probably doesnt work
+    var tag = [aSender tag],
+        selector = tag.isUsed ? @selector(unsetTagForSelectedIssue:) : @selector(setTagForSelectedIssue:);
+
+    [self performSelector:selector withObject:tag.label];
+}
+
 - (void)visisbleIssuesSelectionDidChange:(BOOL)aOpenIssuesAreSelected
 {
     // Remove the previous observer
