@@ -83,9 +83,21 @@
     var endOfOpenButton = CGRectGetMaxX([openIssuesButton frame]);
     [closedIssuesButton setFrameOrigin:CGPointMake(endOfOpenButton, [closedIssuesButton frameOrigin].y)];
 
-        var origin = CGPointMake(openIssuesSelected ? aPosition : endOfOpenButton, 14);
-
+    var origin = CGPointMake(openIssuesSelected ? aPosition : endOfOpenButton, 14);
     [selectedTabView setFrameOrigin:origin];
+
+
+    var origin = CGPointMake(CGRectGetMaxX([closedIssuesButton frame]) + 10, CGRectGetMinY([newIssueButton frame]));
+    [newIssueButton setFrameOrigin:origin];
+
+    origin.x += 43;
+    [tagsButton setFrameOrigin:origin];
+
+    origin.x += 43;
+    [assigneeButton setFrameOrigin:origin];
+
+    origin.x += 43;
+    [milestoneButton setFrameOrigin:origin];
 }
 
 - (@action)changeIssuesStatus:(id)sender

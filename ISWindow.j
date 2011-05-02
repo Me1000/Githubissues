@@ -442,11 +442,11 @@ var SharedNewRepoWindow = nil;
 {
     @outlet CPView      containerView;
 
-    @outlet CPTextField titleField;
+    @outlet CPTextField titleField @accessors(readonly);
     @outlet CPPopUpButton repoField @accessors(readonly);
-    @outlet LPMultiLineTextField bodyField;
+    @outlet LPMultiLineTextField bodyField @accessors(readonly);
 
-    @outlet CPButton saveButton;
+    @outlet CPButton saveButton @accessors(readonly);
     @outlet CPButton cancelButton;
     @outlet CPButton previewButton;
 

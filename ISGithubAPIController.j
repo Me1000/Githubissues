@@ -567,7 +567,62 @@ var APIURLWithString = function(/*CPString*/aString)
         [aRepo setValue:secData forKey:secStateKey];
     };
 
-    request.send("");
-}*/
+    request.send("");*/
+}
 
+
+- (void)createIssue:(CPDictionary)anIssue withCallback:(id)aCallback
+{
+    /*POST https://Me1000:icu81234@api.github.com/repos/:user/:repo/issues
+           https://Me1000:icu81234@api.github.com/repos/Me1000/Githubissues/issues.json?app_id=280issues
+    INPUT
+
+    {"title"=>"String",
+     "body"=>"String",
+     "assignee"=>"String User login",
+     "milestone"=>"Integer Milestone number",
+     "labels"=>["Label1", "Label2"]}*/
+
+ var request = new CFHTTPRequest();
+
+// FIX ME: github is broked
+    if (window.location && window.location.protocol === "file:" && username && password)
+        request.setRequestHeader("Authorization", "Basic "+CFData.encodeBase64String(username +":" + password));
+    // Use V3 of the Github API
+    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+
+    request.open("POST", [self _urlForAPICall:"repos/" + [anIssue objectForKey:"repo"] + "/issues"], true);
+
+    request.oncomplete = function()
+    {
+        var newIssue = nil;
+
+        if (request.success())
+        {
+            try
+            {
+                var responseData = JSON.parse(request.responseText());
+
+                newIssue = [CPDictionary dictionaryWithJSObject:responseData recursively:YES];
+            }
+            catch(e){}
+        }
+
+        if (aCallback)
+            aCallback(newIssue, request);
+    }
+
+    var obj = {
+        title:[anIssue objectForKey:"title"],
+        body: [anIssue objectForKey:"body"]
+    }
+
+    request.send(JSON.stringify(obj));
+}
 @end
+
+
+
+
+
+
