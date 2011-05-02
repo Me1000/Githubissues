@@ -11,7 +11,7 @@
     and the view (the list of issues).
 */
 
-@implementation ISIssuesController : CPObject
+@implementation ISIssuesController : CPArrayController
 {
             ISRepository activeRepository @accessors;
 
@@ -133,12 +133,8 @@
 
 - (void)observeValueForKeyPath:(id)path ofObject:(id)obj change:(id)change context:(id)context
 {
-console.log("changed",path, obj);
     if (obj !== activeRepository)
         return;
-
-    if (path !== "open" && path !== "closed")
-        console.log("OBSERVED VALUE IN ISISSUESCONTROLLER WAS NOT OPEN/CLOSED:::::::::::", path);
 
     [self _showIssues];
 }

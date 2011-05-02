@@ -385,6 +385,8 @@ var APIURLWithString = function(/*CPString*/aString)
 
                 if (![repositoriesByIdentifier objectForKey:anIdentifier])
                     [repositoriesByIdentifier setObject:newRepo forKey:anIdentifier];
+                else
+                    [newRepo updateWithJSObject:data];
             }
             catch (e) {
                 CPLog.error("Unable to load repositority with identifier: "+anIdentifier+" -- "+e);
@@ -604,6 +606,8 @@ var APIURLWithString = function(/*CPString*/aString)
                 var responseData = JSON.parse(request.responseText());
 
                 newIssue = [CPDictionary dictionaryWithJSObject:responseData recursively:YES];
+
+                [[repositoriesByIdentifier objectForKey:[anIssue objectForKey:"repo"]] addIssue:newIssue];
             }
             catch(e){}
         }

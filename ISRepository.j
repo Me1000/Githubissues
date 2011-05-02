@@ -51,6 +51,22 @@
     return newRepo;
 }
 
+- (void)updateWithJSObject:(JSObject)anObject
+{
+    [self setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
+    [self setIsPrivate:anObject["private"]];
+    [self setNumberOfOpenIssues:anObject.open_issues];
+
+    // FIX ME: can we do this, but fast?
+    //[self setIssuesAssignedToCurrentUser:0];
+}
+
+- (void)addIssue:(CPDictionary)anIssue
+{
+    [open addObject:anIssue];
+    [self setNumberOfOpenIssues:numberOfOpenIssues + 1];
+}
+
 /*!
     This is a proxy used to be able to bind the main repository sidebar column to a keypath which properly
     notifies when any of the values in the compound dataview change.

@@ -88,12 +88,9 @@
     if (![CPPlatform isBrowser] || ![CPPlatformWindow supportsMultipleInstances])
         return;
 
-//    [self close];
-
     var platformWindow = [[CPPlatformWindow alloc] initWithContentRect:CGRectMake(100, 100, 545, 350)];
     [platformWindow orderFront:self];
     [[self window] setPlatformWindow:platformWindow];
     [[self window] setFullBridge:YES];
-  //  [self showWindow:self];
 }
 @end
