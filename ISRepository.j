@@ -29,6 +29,8 @@
     CPArray     closed @accessors;
     CPArray     collaborators;
     CPArray     collaboratorNames @accessors(readonly);
+    CPArray     labels @accessors;
+    CPArray     milestones @accessors;
 }
 
 + (CPSet)keyPathsForValuesAffectingSidebarRepresentation

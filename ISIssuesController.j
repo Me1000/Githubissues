@@ -126,6 +126,10 @@
     [self setSortDescriptors:newSortDescriptors];
 }
 
+/*!
+    Sets the active repository,
+    This method registers observers for the visible issue key.
+*/
 - (void)setActiveRepository:(ISRepository)aRepo
 {
     // Remove the previous observer
@@ -140,6 +144,10 @@
     [self _showIssues];
 }
 
+/*!
+    When the visisble issues key (open/closed) changes
+    we redisplay new issues.
+*/
 - (void)observeValueForKeyPath:(id)path ofObject:(id)obj change:(id)change context:(id)context
 {
     if (obj !== activeRepository)
@@ -156,20 +164,15 @@
     [CPMenu popUpContextMenu:[self _assigneesMenu] withEvent:[CPApp currentEvent] forView:sender];
 }
 
-- (void)_assigneesMenu
+/*!
+    Returns the menu for assignee.
+*/
+- (CPMenu)_assigneesMenu
 {
     var menu = [[CPMenu alloc] init];
-//        newItem = [[CPMenuItem alloc] initWithTitle:@"New Tag" action:@selector(newTag:) keyEquivalent:nil];
-
-//    [newItem setTarget:self];
-
-//    [menu addItem:newItem];
 
     var assignees = [activeRepository collaboratorNames],
         count = [assignees count];
-
-//    if (count)
-//        [menu addItem:[CPMenuItem separatorItem]];
 
     for (var i = 0; i < count; i++)
     {
@@ -180,22 +183,84 @@
             [item setState:CPOnState];
 
         [item setTarget:self];
-//        [item setTag:tag];
+        [item setTag:assignee];
         [menu addItem:item];
     }
 
     return menu;
 }
 
-
-- (@action)_label:(id)aSender
+/*!
+    The action of the milestone button.
+    This method creates a popup menu for the button.
+*/
+- (@action)_milestones:(id)aSender
 {
-    var toolbarView = [[aSender toolbar] _toolbarView],
-        view = [toolbarView viewForItem:aSender];
-
-    [CPMenu popUpContextMenu:[self _labelsMenu] withEvent:[CPApp currentEvent] forView:view];
+    [CPMenu popUpContextMenu:[self _milestonesMenu] withEvent:[CPApp currentEvent] forView:aSender];
 }
 
+/*!
+    Returns a CPMenu for the label setting thingy for the selected item
+*/
+- (CPMenu)_milestonesMenu
+{
+    var menu = [[CPMenu alloc] init],
+        newItem = [[CPMenuItem alloc] initWithTitle:@"New Milestone" action:@selector(newMilestone:) keyEquivalent:nil];
+
+    [newItem setTarget:self];
+
+    [menu addItem:newItem];
+
+    var milestones = [self _milestonesForSelectedIssues],
+        count = [milestones count];
+
+    if (count)
+        [menu addItem:[CPMenuItem separatorItem]];
+
+    for (var i = 0; i < count; i++)
+    {
+        var milestone = milestones[i],
+            item = [[CPMenuItem alloc] initWithTitle:[milestone objectForKey:"title"] action:@selector(_toggleLabel:) keyEquivalent:nil];
+
+        if ([milestone objectForKey:"isUsed"])
+            [item setState:CPOnState];
+
+        [item setTarget:self];
+        [item setTag:milestone];
+        [menu addItem:item];
+    }
+
+    return menu;
+}
+
+/*!
+    Returns an array of the milestones.
+    This has an extra property isUsed
+*/
+- (CPArray)_milestonesForSelectedIssues
+{
+    // FIX ME: actually make use of isUsed.
+
+    return [activeRepository milestones];
+}
+
+- (void)newMilestone:(sender)aSender
+{
+    alert("do this");
+}
+
+
+/*!
+    Sent by the assignee button
+*/
+- (@action)_label:(id)sender
+{
+    [CPMenu popUpContextMenu:[self _labelsMenu] withEvent:[CPApp currentEvent] forView:sender];
+}
+
+/*!
+    Returns the menu for assignee.
+*/
 - (CPMenu)_labelsMenu
 {
     var menu = [[CPMenu alloc] init],
@@ -205,18 +270,18 @@
 
     [menu addItem:newItem];
 
-    var tags = [self tagsForSelectedIssue],
-        count = [tags count];
+    var labels = [self _labelsForSelectedIssue],
+        count = [labels count];
 
     if (count)
         [menu addItem:[CPMenuItem separatorItem]];
 
     for (var i = 0; i < count; i++)
     {
-        var label = label[i],
-            item = [[CPMenuItem alloc] initWithTitle:tag.label action:@selector(_toggleLabel:) keyEquivalent:nil];
+        var label = labels[i],
+            item = [[CPMenuItem alloc] initWithTitle:[label objectForKey:"name"] action:@selector(_toggleTag:) keyEquivalent:nil];
 
-        if (label.isUsed)
+        if ([label objectForKey:"isUsed"])
             [item setState:CPOnState];
 
         [item setTarget:self];
@@ -227,6 +292,30 @@
     return menu;
 }
 
+/*!
+    Returns a dictionary of labels for the selected item.
+    This is specific to a single itme becuase it has an isUsed
+    key for each item.
+*/
+- (CPArray)_labelsForSelectedIssue
+{
+    var allLabels = [activeRepository labels],
+        newLabels = [CPArray arrayWithDeepCopyOfArray:allLabels],
+        usedLabels = [[self selectedObjects][0] objectForKey:"labels"],
+        i = 0,
+        c = allLabels.length;
+
+    for (; i < c; i++)   
+        [newLabels[i] setObject:[usedLabels containsObject:allLabels[i]] forKey:"isUsed"];
+
+console.log(allLabels, newLabels);
+
+    return newLabels;
+}
+
+/*!
+    This method actually creates a NEW label
+*/
 - (@action)newLabel:(id)aSender
 {
     // FIX ME:
@@ -234,13 +323,26 @@
     //[[[NewTagController alloc] init] showWindow:self];
 }
 
-- (@action)_toggleLabel:(id)aSender
+/*!
+    This method toggles a particular label
+*/
+- (@action)toggleLabel:(id)aSender
 {
     // FIX ME: this probably doesnt work
-    var tag = [aSender tag],
-        selector = tag.isUsed ? @selector(unsetTagForSelectedIssue:) : @selector(setTagForSelectedIssue:);
+    var label = [aSender tag],
+        selector = [label objectForKey:"isUsed"] ? @selector(unsetLabelForSelectedIssue:) : @selector(setLabelForSelectedIssue:);
 
-    [self performSelector:selector withObject:tag.label];
+    [self performSelector:selector withObject:label];
+}
+
+- (void)unsetLabelForSelectedIssue:(CPDictionary)aLabel
+{
+
+}
+
+- (void)setLabelForSelectedIssue:(CPDictionary)aLabel
+{
+
 }
 
 - (void)visisbleIssuesSelectionDidChange:(BOOL)aOpenIssuesAreSelected
@@ -253,5 +355,19 @@
     [activeRepository addObserver:self forKeyPath:visisbleIssuesKey options:nil context:nil];
 
     [self _showIssues];
+}
+@end
+
+@implementation CPArray (deepcopy)
++ (CPArray)arrayWithDeepCopyOfArray:(CPArray)anArray
+{
+    var newArray = [],
+        i = 0,
+        c = anArray.length;
+
+    for (; i < c; i++)
+        newArray.push([anArray[i] copy]);
+
+    return newArray;
 }
 @end

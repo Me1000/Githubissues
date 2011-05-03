@@ -19,6 +19,7 @@
     @outlet CPButton openIssuesButton;
     @outlet CPButton closedIssuesButton;
 
+    @outlet CPImageView div;
     @outlet CPButton newIssueButton;
     @outlet CPButton tagsButton;
     @outlet CPButton assigneeButton;
@@ -93,8 +94,12 @@
     var origin = CGPointMake(openIssuesSelected ? aPosition : endOfOpenButton, 14);
     [selectedTabView setFrameOrigin:origin];
 
+    var origin = CGPointMake(CGRectGetMaxX([closedIssuesButton frame]) + 6, 5);
 
-    var origin = CGPointMake(CGRectGetMaxX([closedIssuesButton frame]) + 10, CGRectGetMinY([newIssueButton frame]));
+    [div setFrameOrigin:origin];
+
+
+    var origin = CGPointMake(CGRectGetMaxX([closedIssuesButton frame]) + 20, CGRectGetMinY([newIssueButton frame]));
     [newIssueButton setFrameOrigin:origin];
 
     origin.x += 43;

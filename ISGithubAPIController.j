@@ -402,6 +402,7 @@ var APIURLWithString = function(/*CPString*/aString)
         {
             [self loadLabelsForRepository:newRepo];
             [self loadCollboratorsForRepository:newRepo];
+            [self loadMilestonesForRepository:newRepo];
         }
 
         [[CPRunLoop currentRunLoop] performSelectors];
@@ -421,12 +422,16 @@ var APIURLWithString = function(/*CPString*/aString)
 
     request.oncomplete = function()
     {
-        var labels = [];
+        var labels = [],
+            newLabels = [];
         if (request.success())
         {
             try
             {
                 labels = JSON.parse(request.responseText()) || [];
+
+                for (var i = 0, c = labels.length; i < c; i++)
+                    newLabels.push([CPDictionary dictionaryWithJSObject:labels[i] recursively:YES])
             }
             catch (e)
             {
@@ -434,7 +439,42 @@ var APIURLWithString = function(/*CPString*/aString)
             }
         }
 
-        aRepo.labels = labels;
+        [aRepo setLabels:newLabels];
+        [[CPRunLoop currentRunLoop] performSelectors];
+    };
+
+    request.send("");
+}
+
+- (void)loadMilestonesForRepository:(ISRepository)aRepo
+{
+    ///repos/:user/:repo/milestones
+
+    var request = new CFHTTPRequest();
+    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+
+    request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/milestones"], true);
+
+    request.oncomplete = function()
+    {
+        var milestones = [],
+            newMilestones = [];
+        if (request.success())
+        {
+            try
+            {
+                milestones = JSON.parse(request.responseText()) || [];
+
+                for (var i = 0, c = milestones.length; i < c; i++)
+                    newMilestones.push([CPDictionary dictionaryWithJSObject:milestones[i] recursively:YES])
+            }
+            catch (e)
+            {
+                CPLog.error("Unable to load labels for issue: " + anIssue + @" -- " + e);
+            }
+        }
+
+        [aRepo setMilestones:newMilestones];
         [[CPRunLoop currentRunLoop] performSelectors];
     };
 
