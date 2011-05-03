@@ -110,15 +110,13 @@
 
 - (@action)searchDidChange:(id)sender
 {
-console.log("SENT:",[sender stringValue]);
+    // FIX ME: filter bar and better predicate stuff
+
     if (![sender stringValue])
-    {
-        [self setFilterPredicate:nil];
-        return;
-    }
-    // FIX ME: filter the issues
-    var filter = [CPPredicate predicateWithFormat:"title=%@", [sender stringValue]];
-console.log("change something",filter);
+        var filter = nil;
+    else
+        var filter = [CPPredicate predicateWithFormat:"title like[cd] %@", [sender stringValue]];
+
     [self setFilterPredicate:filter];
 }
 
@@ -256,28 +254,4 @@ console.log("change something",filter);
 
     [self _showIssues];
 }
-
-
-- (int)nuddmberOfRowsInTableView:(CPTableView)aTable
-{
-    if (!activeRepository)
-        return 0;
-
-    if (filteredIssues)
-        return [filteredIssues count];
-
-    return [[activeRepository valueForKey:visisbleIssuesKey] count] || 0;
-}
-
-- (id)tddableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
-{
-    if (!activeRepository)
-        return nil;
-
-    if (filteredIssues)
-        return [filteredIssues objectAtIndex:aRow];
-
-    return [[activeRepository valueForKey:visisbleIssuesKey] objectAtIndex:aRow];
-}
-
 @end
