@@ -61,7 +61,7 @@
 
 - (@action)cancel:(id)sender
 {
-    [[self window] orderOutWithAnimation:sender];
+    [[self window] cancel:sender];
 }
 
 - (@action)addIssue:(id)sender

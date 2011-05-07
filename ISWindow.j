@@ -19,6 +19,7 @@ var WindowBackground = nil,
 {
     BOOL isDetached @accessors;
 }
+
 + (void)initialize
 {
     WindowBackground = [CPColor colorWithPatternImage:[[CPNinePartImage alloc] initWithImageSlices:[
@@ -181,6 +182,17 @@ var WindowBackground = nil,
         [[self contentView] setBackgroundColor:DetachedWindowBackground];
     else
         [[self contentView] setBackgroundColor:WindowBackground];
+
+    console.log("blah");
+}
+
+- (@action)cancel:(id)sender
+{
+    [self orderOutWithAnimation:sender];
+
+    window.setTimeout(function(){
+        [self _windowAnimatedOut];
+    },230);
 }
 @end
 
@@ -375,15 +387,7 @@ var SharedNewRepoWindow = nil;
     [loadingIndicator startAnimating];
 }
 
-- (@action)cancel:(id)sender
-{
-    [self orderOutWithAnimation:sender];
 
-    window.setTimeout(function(){
-        [repoNameField setStringValue:""];
-        [self controlTextDidChange:nil];
-    },230);
-}
 
 - (BOOL)_isValid
 {
@@ -431,6 +435,12 @@ var SharedNewRepoWindow = nil;
     [repoNameField setStringValue:[[suggestedReposController contentArray][index] identifier]];
 
     [self addRepo:sender];
+}
+
+- (void)_windowAnimatedOut
+{
+    [repoNameField setStringValue:""];
+    [self controlTextDidChange:nil];
 }
 
 @end
@@ -510,6 +520,8 @@ var SharedNewRepoWindow = nil;
     [bodyField setEnabled:YES];
 
     [saveButton setEnabled:NO];
+
+    [self setIsDetached:NO];
 }
 
 - (void)setRepos:(CPArray)repos
@@ -526,6 +538,11 @@ var SharedNewRepoWindow = nil;
 }
 
 - (void)windowDidMove:(CPNotification)aNote
+{
+    [self setIsDetached:YES];
+}
+
+- (void)_windowAnimatedOut
 {
     [self setIsDetached:YES];
 }
