@@ -15,8 +15,6 @@
 {
             ISRepository activeRepository @accessors;
 
-//            CPArray filteredIssues;
-
     @outlet CPView containerView;
     @outlet ISSortBar sortBar;
             CPScrollView scrollView;
@@ -318,9 +316,7 @@ console.log(allLabels, newLabels);
 */
 - (@action)newLabel:(id)aSender
 {
-    // FIX ME:
-    alert("DO THIS");
-    //[[[NewTagController alloc] init] showWindow:self];
+    [[[ISNewLabelWindowController alloc] initWithWindowCibName:"NewLabelWindow"] showWindow:self];
 }
 
 /*!

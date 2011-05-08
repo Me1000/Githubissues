@@ -76,7 +76,10 @@
     [updatedField sizeToFit];
 
     [commentsField setStringValue:[aValue objectForKey:"comments"] + " comments"];
-    [avatarView setImage:[[CPImage alloc] initByReferencingFile:[user objectForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
+
+    // FIX ME: what we could do is preload all the images by having the browser loop through all the issues, taking the submit
+    // user image and just creating a new image object. Memory considerations should be ... herp ... considered though.
+    [avatarView setImage:[[CPImage alloc] initWithContentsOfFile:[user objectForKey:"gravatar_url"] size:CGSizeMake(30, 30)]];
 }
 
 - (void)encodeWithCoder:(CPCoder)aCoder

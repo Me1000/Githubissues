@@ -23,6 +23,7 @@
 @import "ISLoadingIndicator.j"
 @import "LPMultiLineTextField.j"
 @import "ISNewIssueWindowController.j"
+@import "ISNewLabelWindowController.j"
 
 @implementation AppController : CPObject
 {

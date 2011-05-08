@@ -13,7 +13,8 @@ var WindowBackground = nil,
     RedButtonColor = nil,
     RedButtonDownColor = nil,
     GreenButtonDisabledColor = nil,
-    RedButtonDisabledColor = nil;
+    RedButtonDisabledColor = nil,
+    TextFieldBezelColor = nil;
 
 @implementation ISWindow : CPWindow
 {
@@ -97,6 +98,12 @@ var WindowBackground = nil,
         resourcesImage("blue-button-down-1.png", 2, 23),
         resourcesImage("blue-button-down-2.png", 13, 23)
     ] isVertical:NO]];
+
+    TextFieldBezelColor = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        resourcesImage("textfield-0.png", 18, 43),
+        resourcesImage("textfield-1.png", 10, 43),
+        resourcesImage("textfield-2.png", 18, 43)
+    ] isVertical:NO]];
 }
 
 - (void)awakeFromCib
@@ -121,6 +128,15 @@ var WindowBackground = nil,
     return self;
 }
 
+- (void)styleTextField:(CPTextField)aField
+{
+    [aField setValue:TextFieldBezelColor forThemeAttribute:"bezel-color"];
+    [aField setValue:CGInsetMake(0,0,0,0) forThemeAttribute:"bezel-inset"];
+    [aField setValue:CPCenterVerticalTextAlignment forThemeAttribute:"vertical-alignment"];
+    [aField setValue: CGInsetMake(2.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset"];
+    [aField setValue: CGInsetMake(0.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset" inState:CPThemeStateEditing|CPThemeStateBezeled];
+
+}
 
 - (void)styleButton:(CPButton)aButton withColor:(CPString)aColor
 {
@@ -230,20 +246,7 @@ var SharedNewRepoWindow = nil;
 
     SharedNewRepoWindow = self;
 
-    var bezel = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
-        resourcesImage("textfield-0.png", 18, 43),
-        resourcesImage("textfield-1.png", 10, 43),
-        resourcesImage("textfield-2.png", 18, 43)
-    ] isVertical:NO]];
-
-    [repoNameField setValue:bezel forThemeAttribute:"bezel-color"];
-
-    [repoNameField setValue:bezel forThemeAttribute:"bezel-color"];
-    [repoNameField setValue:CGInsetMake(0,0,0,0) forThemeAttribute:"bezel-inset"];
-    [repoNameField setValue:CPCenterVerticalTextAlignment forThemeAttribute:"vertical-alignment"];
-    [repoNameField setValue: CGInsetMake(2.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset"];
-    [repoNameField setValue: CGInsetMake(0.0, 7.0, 5.0, 12.0) forThemeAttribute:"content-inset" inState:CPThemeStateEditing|CPThemeStateBezeled];
-
+    [self styleTextField:repoNameField];
     [self styleButton:submitButton withColor:"green"];
     [self styleButton:cancelButton withColor:"red"];
 
