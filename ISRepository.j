@@ -1,16 +1,9 @@
 /*
- * AppController.j
- * GithubIssues
- *
- * Created by Alexander Ljungberg on April 14, 2011.
- * Copyright 2011, WireLoad LLC All rights reserved.
- */
-
-/*
  * ISRepository.j
  * GithubIssues
  *
  * Created by Alexander Ljungberg on April 18, 2011.
+ * Copyright 2011, WireLoad Inc. All rights reserved.
  */
 
 /*!
