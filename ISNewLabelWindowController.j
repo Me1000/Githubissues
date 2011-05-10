@@ -72,7 +72,8 @@ var bezelColor = nil,
     }
 
 
-    CGContextAddRect(context, aRect);
+    var path = CGPathWithRoundedRectangleInRect(aRect, 3, 3, YES, YES, YES, YES);
+    CGContextAddPath(context, path);
     CGContextDrawLinearGradient(context, gradient, CGPointMake(0,0), CGPointMake(0, aRect.size.height), nil);
 
 }
