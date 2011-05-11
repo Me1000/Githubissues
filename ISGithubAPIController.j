@@ -126,7 +126,7 @@ var APIURLWithString = function(/*CPString*/aString)
 /*!
     We sometimes fall back to V2 of the API since V3 is still a work in progress.
 
-    If we're on the server 
+    If we're on the server
 */
 - (CPString)_urlForV2APICall:(CPString)aCall
 {
@@ -173,7 +173,7 @@ var APIURLWithString = function(/*CPString*/aString)
             secondTerm = [aSearchString substringFromIndex:indexOfSlash+1],
             filter = function() {
                 var reply = [];
-  
+
                 for (var i = 0, c = _cachedFirstSearchTermResults.length; i < c; i++)
                 {
                     if (!secondTerm || [[_cachedFirstSearchTermResults[i].name uppercaseString] hasPrefix:[secondTerm uppercaseString]])
@@ -192,15 +192,15 @@ var APIURLWithString = function(/*CPString*/aString)
             // at this point we know we have a username, so we're only searching one user's issues
             var request = new CFHTTPRequest();
             //        request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    
+
             // We don't have a V3 for searching yet...
             // V2 look like:
             // http://github.com/api/v2/json/repos/show/[:USERNAME]
-    
+
             request.open("GET", [self _urlForV2APICall:"repos/show/"+ encodeURIComponent(firstTerm)], true);
-    
+
             // FIX ME: time stamp this request
-    
+
             request.oncomplete = function()
             {
                 if (request.success())
@@ -331,13 +331,13 @@ var APIURLWithString = function(/*CPString*/aString)
     // at this point we know we have a username, so we're only searching one user's issues
     var request = new CFHTTPRequest();
     //request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    
+
     // We don't have a V3 for searching yet...
     // V2 look like:
     // http://github.com/api/v2/json/repos/show/[:USERNAME]
-    
+
     request.open("GET", [self _urlForV2APICall:"repos/show/"+ encodeURIComponent(aUserLogin)], true);
-    
+
     request.oncomplete = function()
     {
         if (request.success())
@@ -470,7 +470,7 @@ var APIURLWithString = function(/*CPString*/aString)
             }
             catch (e)
             {
-                CPLog.error("Unable to load labels for issue: " + anIssue + @" -- " + e);
+                CPLog.error("Unable to load milestones for repository: " + aRepo + @" -- " + e);
             }
         }
 
@@ -616,7 +616,7 @@ var APIURLWithString = function(/*CPString*/aString)
 }
 
 /*!
-    Collaborators are also assignees 
+    Collaborators are also assignees
 */
 - (void)loadCollboratorsForRepository:(ISRepository)aRepo
 {
