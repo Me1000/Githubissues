@@ -1,5 +1,5 @@
 /*
- * AppController.j
+ * ISSortBar.j
  * GithubIssues
  *
  * Created by Randy Luecke on April 14, 2011.
@@ -84,7 +84,7 @@ var kSortBarHeight = 36,
 
         [optionsMenu addItem:item];
     }
-    
+
 }
 
 - (void)buttonWasClicked:(id)sender

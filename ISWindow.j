@@ -1,9 +1,10 @@
-/*!
-    Created by Randy Luecke April 22nd, 2011
-    Copyright RCLConcepts, LLC. All right reserved
-
-    used for the awesome translucent windows
-*/
+/*
+ * ISWindow.j
+ * GithubIssues
+ *
+ * Created by Randy Luecke on April 22nd, 2011.
+ * Copyright 2011, RCLConcepts, LLC All rights reserved.
+ */
 
 var WindowBackground = nil,
     DetachedWindowBackground = nil,
@@ -16,6 +17,9 @@ var WindowBackground = nil,
     RedButtonDisabledColor = nil,
     TextFieldBezelColor = nil;
 
+/*!
+    used for the awesome translucent windows
+*/
 @implementation ISWindow : CPWindow
 {
     BOOL isDetached @accessors;
