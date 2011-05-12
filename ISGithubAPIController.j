@@ -191,8 +191,8 @@ var APIURLWithString = function(/*CPString*/aString)
         {
             // at this point we know we have a username, so we're only searching one user's issues
             var request = new CFHTTPRequest();
-            //        request.setRequestHeader("accept", "application/vnd.github.v3+json");
-
+            //        //request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    
             // We don't have a V3 for searching yet...
             // V2 look like:
             // http://github.com/api/v2/json/repos/show/[:USERNAME]
@@ -235,7 +235,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
     //github.com/users/technoweenie.json
     // Use V3 of the Github API
-    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     // FIX ME: github is broked
     if (window.location && window.location.protocol === "file:" && username && password)
@@ -330,8 +330,8 @@ var APIURLWithString = function(/*CPString*/aString)
 {
     // at this point we know we have a username, so we're only searching one user's issues
     var request = new CFHTTPRequest();
-    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
-
+    ////request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    
     // We don't have a V3 for searching yet...
     // V2 look like:
     // http://github.com/api/v2/json/repos/show/[:USERNAME]
@@ -362,7 +362,7 @@ var APIURLWithString = function(/*CPString*/aString)
     var request = new CFHTTPRequest();
 
     // Use V3 of the Github API
-    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     var parts = anIdentifier.split("/");
     if ([parts count] > 2)
@@ -416,7 +416,7 @@ var APIURLWithString = function(/*CPString*/aString)
     ///repos/:user/:repo/labels.json
 
     var request = new CFHTTPRequest();
-    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/labels.json"], true);
 
@@ -451,7 +451,7 @@ var APIURLWithString = function(/*CPString*/aString)
     ///repos/:user/:repo/milestones
 
     var request = new CFHTTPRequest();
-    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/milestones"], true);
 
@@ -511,7 +511,7 @@ var APIURLWithString = function(/*CPString*/aString)
         (function(){
         var request = new CFHTTPRequest();
 
-//        request.setRequestHeader("accept", "application/vnd.github.v3+json");
+//        //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
         request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
 
@@ -662,7 +662,7 @@ var APIURLWithString = function(/*CPString*/aString)
     if (window.location && window.location.protocol === "file:" && username && password)
         request.setRequestHeader("Authorization", "Basic "+CFData.encodeBase64String(username +":" + password));
     // Use V3 of the Github API
-    request.setRequestHeader("accept", "application/vnd.github.v3+json");
+    //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
     request.open("POST", [self _urlForAPICall:"repos/" + [anIssue objectForKey:"repo"] + "/issues"], true);
 
