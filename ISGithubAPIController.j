@@ -192,7 +192,7 @@ var APIURLWithString = function(/*CPString*/aString)
             // at this point we know we have a username, so we're only searching one user's issues
             var request = new CFHTTPRequest();
             //        //request.setRequestHeader("accept", "application/vnd.github.v3+json");
-    
+
             // We don't have a V3 for searching yet...
             // V2 look like:
             // http://github.com/api/v2/json/repos/show/[:USERNAME]
@@ -439,7 +439,7 @@ var APIURLWithString = function(/*CPString*/aString)
                 labels = JSON.parse(request.responseText()) || [];
 
                 for (var i = 0, c = labels.length; i < c; i++)
-                    newLabels.push([CPDictionary dictionaryWithJSObject:labels[i] recursively:YES])
+                    newLabels.push([ISLabel labelWithJSObject:labels[i]]);
             }
             catch (e)
             {

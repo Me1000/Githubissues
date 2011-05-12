@@ -38,14 +38,37 @@
 
 + (id)repositoryWithJSObject:(JSObject)anObject
 {
-    var newRepo = [[ISRepository alloc] init];
+    var newRepo = [ISRepository new];
 
     [newRepo setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
     [newRepo setIsPrivate:anObject["private"]];
     [newRepo setNumberOfOpenIssues:anObject.open_issues];
     [newRepo setIssuesAssignedToCurrentUser:0];
+    [newRepo setLabels:anObject['labels']];
 
     return newRepo;
+}
+
+- (id)init
+{
+    if (self = [super init])
+    {
+        labels = [];
+    }
+    return self;
+}
+
+- (CPArray)labels
+{
+    return labels;
+}
+
+- (void)setLabels:(CPArray)someLabels
+{
+    // Prevent mystery errors.
+    if (someLabels === nil || someLabels === undefined || ![someLabels isKindOfClass:CPArray])
+        [CPException raise:CPInvalidArgumentException reason:@"Labels must be an array."];
+    labels = someLabels;
 }
 
 - (void)updateWithJSObject:(JSObject)anObject
@@ -53,6 +76,7 @@
     [self setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
     [self setIsPrivate:anObject["private"]];
     [self setNumberOfOpenIssues:anObject.open_issues];
+    [self setLabels:anObject['labels']];
 
     // FIX ME: can we do this, but fast?
     //[self setIssuesAssignedToCurrentUser:0];
@@ -114,6 +138,7 @@
     isPrivate           = [aCoder decodeObjectForKey:"isPrivate"];
     numberOfOpenIssues  = [aCoder decodeObjectForKey:"numberOfOpenIssues"];
     issuesAssignedToCurrentUser = [aCoder decodeObjectForKey:"issuesAssignedToCurrentUser"];
+    labels              = [aCoder decodeObjectForKey:"labels"] || [];
 //    open                = [aCoder decodeObjectForKey:"open"];
 //    closed              = [aCoder decodeObjectForKey:"closed"];
 
@@ -126,6 +151,7 @@
     [aCoder encodeObject:isPrivate forKey:"isPrivate"];
     [aCoder encodeObject:numberOfOpenIssues forKey:"numberOfOpenIssues"];
     [aCoder encodeObject:issuesAssignedToCurrentUser forKey:"issuesAssignedToCurrentUser"];
+    [aCoder encodeObject:labels forKey:"labels"];
 //    [aCoder encodeObject:open forKey:"open"];
 //    [aCoder encodeObject:closed forKey:"closed"];
 }

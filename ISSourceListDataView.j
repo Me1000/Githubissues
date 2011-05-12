@@ -124,6 +124,13 @@ var ISSourceLockImage       = nil,
             selectedImage = ISSourceLockImageActive;
         }
     }
+    else if ([aValue isKindOfClass:ISLabel])
+    {
+        text = [aValue name];
+        number = nil;
+        specialNumber = nil;
+        // TODO Draw colour coded label image.
+    }
     else if (aValue)
     {
         text = aValue.text;

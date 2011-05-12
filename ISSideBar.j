@@ -99,16 +99,22 @@
     // setup the source list
     filterList = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
 
+    var labelsArrayController = [CPArrayController new];
+    [labelsArrayController bind:@"contentArray" toObject:repoController withKeyPath:"selection.labels" options:nil];
+    [labelsArrayController setAvoidsEmptySelection:NO];
+
     var col = [[CPTableColumn alloc] initWithIdentifier:"FilterList"];
-
-    // FIX ME: do this
-    // [col setDataView:];
-
     [filterList addTableColumn:col];
+    [col bind:CPValueBinding toObject:labelsArrayController withKeyPath:"arrangedObjects.sidebarRepresentation" options:nil];
+    [col setDataView:[[ISSourceListDataView alloc] initWithFrame:CGRectMakeZero()]];
+
     [filterList setHeaderView:nil];
     [filterList setCornerView:nil];
+    [filterList sizeLastColumnToFit];
+    [filterList setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
     [filterList setBackgroundColor:nil];
     [filterList setSelectionHighlightStyle:CPTableViewSelectionHighlightStyleSourceList];
+    [filterList setSelectionGradientColors:sourceListSelectionColor];
     [filterList setRowHeight:31];
 
     // FIXME Give this some other data.

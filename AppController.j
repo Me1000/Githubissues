@@ -24,6 +24,7 @@
 @import "LPMultiLineTextField.j"
 @import "ISNewIssueWindowController.j"
 @import "ISNewLabelWindowController.j"
+@import "ISLabel.j"
 
 @implementation AppController : CPObject
 {
