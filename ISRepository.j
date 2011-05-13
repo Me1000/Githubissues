@@ -6,6 +6,8 @@
  * Copyright 2011, WireLoad Inc. All rights reserved.
  */
 
+@import "CPArray+extensions.j"
+
 /*!
     Represent a GitHub repo.
 */
@@ -71,6 +73,27 @@
     labels = someLabels;
 }
 
+/*!
+    This method should be in some utility class, it has no particular reason to be here.
+*/
++ (CPPredicate)issueAssignedToCurrentUserPredicate
+{
+    var loggedInUser = [[ISGithubAPIController sharedController] username];
+    if (!loggedInUser)
+        return nil;
+    return [CPPredicate predicateWithFormat:@"(assignee.login == %@)", loggedInUser];
+}
+
+- (void)setOpen:(CPArray)openIssues
+{
+    open = openIssues;
+    numberOfOpenIssues = [open count];
+
+    var count = numberOfOpenIssues;
+
+    [self setIssuesAssignedToCurrentUser:[open countUsingPredicate:[ISRepository issueAssignedToCurrentUserPredicate]]];
+}
+
 - (void)updateWithJSObject:(JSObject)anObject
 {
     [self setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
@@ -101,6 +124,9 @@
 {
     [open addObject:anIssue];
     [self setNumberOfOpenIssues:numberOfOpenIssues + 1];
+
+    if ([[ISRepository issueAssignedToCurrentUserPredicate] evaluateWithObject:anIssue])
+        [self setIssuesAssignedToCurrentUser:issuesAssignedToCurrentUser + 1];
 }
 
 - (void)setCollaborators:(CPArray)newCollabs

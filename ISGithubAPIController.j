@@ -512,18 +512,17 @@ var APIURLWithString = function(/*CPString*/aString)
     // FIX ME WE NEED TO DO THIS FOR CLOSED ISSUES TOO :(
     var numberOfIssues = [aRepo numberOfOpenIssues],
         page = 1,
-        requests = [],
-        totalAssigned = 0;
+        requests = [];
 
     while((page * 100) <= numberOfIssues + 100)
     {
         (function(){
             var request = new CFHTTPRequest();
-            
+
 //            //request.setRequestHeader("accept", "application/vnd.github.v3+json");
-            
+
             request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
-            
+
             request.oncomplete = function()
             {
                 if (request.success())
@@ -533,17 +532,14 @@ var APIURLWithString = function(/*CPString*/aString)
                         var responseData = JSON.parse(request.responseText()),
                             c = responseData.length,
                             i = 0;
-            
+
                         request.MYData = [];
-            
+
                         // Reversing them
                         while(c--)
                         {
                             var obj = [ISIssue issuesWithJSObject:responseData[c]];
-            
-                            if (stateKey === "open" && [[obj assignee] objectForKey:"login"] !== [CPNull null])
-                                    totalAssigned++;
-            
+
                             request.MYData.push(obj);
                         }
                     }
@@ -553,7 +549,7 @@ var APIURLWithString = function(/*CPString*/aString)
                         CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
                     }
                 }
-            
+
                 // Check to make sure if all requests are done.
                 // If this test passes on all object one hasn't completed yet.
                 // 4 === CFHTTPRequest.CompleteState everything less than that is incomplete
@@ -563,24 +559,22 @@ var APIURLWithString = function(/*CPString*/aString)
                 {
                     var concatIssues = [],
                         count = requests.length;
-            
+
                     // reversing them making sure it increments as you go down...
                     while(count--)
                         [concatIssues addObjectsFromArray:requests[count].MYData];
-            
+
                     [aRepo setValue:concatIssues forKey:stateKey];
-                    [aRepo setValue:totalAssigned forKey:"issuesAssignedToCurrentUser"];
-                    [aRepo setIssuesAssignedToCurrentUser:totalAssigned];
-            
+
                     if (aCallback)
                         aCallback(aRepo, requests);
-            
+
                     [[CPRunLoop currentRunLoop] performSelectors];
                 }
             };
-            
+
             request.send("");
-            
+
             requests.push(request);
             page++;
         })();
