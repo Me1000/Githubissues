@@ -48,7 +48,7 @@ var ISSourceLockImage       = nil,
     [imageview setImageScaling:CPScaleNone];
     [self addSubview:imageview];
 
-    labelIconView = [[ISLabelIcon alloc] initWithFrame:CGRectMake(7, 12, 11, 11)];
+    labelIconView = [[ISLabelIcon alloc] initWithFrame:CGRectMake(7, 12, 13, 13)];
     [self addSubview:labelIconView];
 
     textfield = [[CPTextField alloc] initWithFrame:CGRectMake(18, 9, 90, 15)];
@@ -358,6 +358,8 @@ var ISAssignedBadgeViewBackgroundColor = nil,
         bounds = [self bounds];
 
     CGContextSetFillColor(context, color);
+    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [CPColor colorWithCalibratedWhite:0 alpha:.4]);
+
     CGContextBeginPath(context);
 
     /*
@@ -370,7 +372,7 @@ var ISAssignedBadgeViewBackgroundColor = nil,
     */
 
     // Coordinates below are all based on an 11x11 size label.
-    CGContextScaleCTM(context, bounds.size.width / 11.0, bounds.size.height / 11.0);
+    CGContextScaleCTM(context, (bounds.size.width -2) / 11.0, (bounds.size.height- 2) / 11.0);
 
     CGContextMoveToPoint(context,       10.07,  0);
     CGContextAddLineToPoint(context,    6.568,  0);
@@ -387,7 +389,6 @@ var ISAssignedBadgeViewBackgroundColor = nil,
     CGContextAddCurveToPoint(context,   8.854,  0.812,  9.449,  0.812,  9.814,  1.176);
     CGContextAddCurveToPoint(context,   10.182, 1.54,   10.182, 2.129,  9.814,  2.493);
     CGContextClosePath(context);
-
 
     CGContextFillPath(context);
 }
