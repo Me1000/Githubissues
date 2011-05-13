@@ -17,6 +17,17 @@
     CPArray      labels @accessors;
 }
 
+/*!
+    Utility method. The predicate returned should not be reused if the logged in user changes.
+*/
++ (CPPredicate)issueAssignedToCurrentUserPredicate
+{
+    var loggedInUser = [[ISGithubAPIController sharedController] username];
+    if (!loggedInUser)
+        return nil;
+    return [CPPredicate predicateWithFormat:@"(assignee.login == %@)", loggedInUser];
+}
+
 + (id)issuesWithJSObject:(JSObject)anObject
 {
     newIssues = [ISIssue new];

@@ -73,25 +73,12 @@
     labels = someLabels;
 }
 
-/*!
-    This method should be in some utility class, it has no particular reason to be here.
-*/
-+ (CPPredicate)issueAssignedToCurrentUserPredicate
-{
-    var loggedInUser = [[ISGithubAPIController sharedController] username];
-    if (!loggedInUser)
-        return nil;
-    return [CPPredicate predicateWithFormat:@"(assignee.login == %@)", loggedInUser];
-}
-
 - (void)setOpen:(CPArray)openIssues
 {
     open = openIssues;
     numberOfOpenIssues = [open count];
 
-    var count = numberOfOpenIssues;
-
-    [self setIssuesAssignedToCurrentUser:[open countUsingPredicate:[ISRepository issueAssignedToCurrentUserPredicate]]];
+    [self setIssuesAssignedToCurrentUser:[open countUsingPredicate:[ISIssue issueAssignedToCurrentUserPredicate]]];
 }
 
 - (void)updateWithJSObject:(JSObject)anObject
@@ -125,7 +112,7 @@
     [open addObject:anIssue];
     [self setNumberOfOpenIssues:numberOfOpenIssues + 1];
 
-    if ([[ISRepository issueAssignedToCurrentUserPredicate] evaluateWithObject:anIssue])
+    if ([[ISIssue issueAssignedToCurrentUserPredicate] evaluateWithObject:anIssue])
         [self setIssuesAssignedToCurrentUser:issuesAssignedToCurrentUser + 1];
 }
 
