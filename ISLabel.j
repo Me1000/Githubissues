@@ -33,6 +33,25 @@
     return newLabel;
 }
 
+- (id)copy
+{
+    var newLabel = [ISLabel new];
+
+    newLabel.name = name;
+    newLabel.url = url;
+    newLabel.color = color;
+    newLabel.numberOfIssues = numberOfIssues;;
+
+    return newLabel;
+}
+
+- (BOOL)isEqual:(ISLabel)anotherLabel
+{
+    // If the URLs are the same then they represent the same label
+    // on Github, thus they must be equal. 
+    return [anotherLabel url] === url;
+}
+
 - (id)init
 {
     self = [super init];
