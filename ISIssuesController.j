@@ -358,17 +358,3 @@
     [self _showIssues];
 }
 @end
-
-@implementation CPArray (deepcopy)
-+ (CPArray)arrayWithDeepCopyOfArray:(CPArray)anArray
-{
-    var newArray = [],
-        i = 0,
-        c = anArray.length;
-
-    for (; i < c; i++)
-        newArray.push([anArray[i] copy]);
-
-    return newArray;
-}
-@end

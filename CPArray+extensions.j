@@ -34,4 +34,18 @@
     return r;
 }
 
+/*!
+    Because sometimes it's nice to have a deep copy of an array
+*/
++ (CPArray)arrayWithDeepCopyOfArray:(CPArray)anArray
+{
+    var newArray = [],
+        i = 0,
+        c = anArray.length;
+
+    for (; i < c; i++)
+        newArray.push([anArray[i] copy]);
+
+    return newArray;
+}
 @end
