@@ -31,7 +31,7 @@
     [newLabel setUrl:[CPURL URLWithString:anObject['url']]];
     [newLabel setColor:[CPColor colorWithHexString:anObject['color']]];
 
-    [newLabel setLabelID:[[url pathComponents] lastObject]];
+    [newLabel setLabelID:[[[newLabel url] pathComponents] lastObject]];
 
     return newLabel;
 }
