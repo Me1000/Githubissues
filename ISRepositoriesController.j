@@ -7,8 +7,9 @@
  */
 
 /*!
-    This class is a singleton that allows for the managing of repositories
-    This also acts as the data source for the source list.
+    This class serves to manage all the repositories.
+    The Repo list is bound to this controller for the
+    data.
 */
 @implementation ISRepositoriesController : CPArrayController
 {

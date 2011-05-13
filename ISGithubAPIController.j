@@ -432,6 +432,7 @@ var APIURLWithString = function(/*CPString*/aString)
     {
         var labels = [],
             newLabels = [];
+
         if (request.success())
         {
             try
@@ -517,73 +518,71 @@ var APIURLWithString = function(/*CPString*/aString)
     while((page * 100) <= numberOfIssues + 100)
     {
         (function(){
-        var request = new CFHTTPRequest();
-
-//        //request.setRequestHeader("accept", "application/vnd.github.v3+json");
-
-        request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
-
-        request.oncomplete = function()
-        {
-            if (request.success())
+            var request = new CFHTTPRequest();
+            
+//            //request.setRequestHeader("accept", "application/vnd.github.v3+json");
+            
+            request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
+            
+            request.oncomplete = function()
             {
-                try
+                if (request.success())
                 {
-                    var responseData = JSON.parse(request.responseText()),
-                        c = responseData.length,
-                        i = 0;
-
-                    request.MYData = [];
-
-                    // Reversing them
-                    while(c--)
+                    try
                     {
-                        var obj = [CPDictionary dictionaryWithJSObject:responseData[c] recursively:YES];
-
-                        if (stateKey === "open")
-                            if ([obj objectForKey:"assignee"] !== [CPNull null])
-                                if ([[obj objectForKey:"assignee"] objectForKey:"login"] !== [CPNull null])
+                        var responseData = JSON.parse(request.responseText()),
+                            c = responseData.length,
+                            i = 0;
+            
+                        request.MYData = [];
+            
+                        // Reversing them
+                        while(c--)
+                        {
+                            var obj = [ISIssue issuesWithJSObject:responseData[c]];
+            
+                            if (stateKey === "open" && [[obj assignee] objectForKey:"login"] !== [CPNull null])
                                     totalAssigned++;
-
-                        request.MYData.push(obj);
+            
+                            request.MYData.push(obj);
+                        }
+                    }
+                    catch (e)
+                    {
+                        // FIX ME: make this more descriptivate I guess...
+                        CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
                     }
                 }
-                catch (e)
+            
+                // Check to make sure if all requests are done.
+                // If this test passes on all object one hasn't completed yet.
+                // 4 === CFHTTPRequest.CompleteState everything less than that is incomplete
+                if ([requests indexOfObjectPassingTest:function(object, index){return object.readyState() < 4}] !== CPNotFound)
+                    return;
+                else
                 {
-                    // FIX ME: make this more descriptivate I guess...
-                    CPLog.error("Unable to load issues for repo: " + aRepo + @" -- " + e);
+                    var concatIssues = [],
+                        count = requests.length;
+            
+                    // reversing them making sure it increments as you go down...
+                    while(count--)
+                        [concatIssues addObjectsFromArray:requests[count].MYData];
+            
+                    [aRepo setValue:concatIssues forKey:stateKey];
+                    [aRepo setValue:totalAssigned forKey:"issuesAssignedToCurrentUser"];
+                    [aRepo setIssuesAssignedToCurrentUser:totalAssigned];
+            
+                    if (aCallback)
+                        aCallback(aRepo, requests);
+            
+                    [[CPRunLoop currentRunLoop] performSelectors];
                 }
-            }
-
-            // Check to make sure if all requests are done.
-            // If this test passes on all object one hasn't completed yet.
-            // 4 === CFHTTPRequest.CompleteState everything less than that is incomplete
-            if ([requests indexOfObjectPassingTest:function(object, index){return object.readyState() < 4}] !== CPNotFound)
-                return;
-            else
-            {
-                var concatIssues = [],
-                    count = requests.length;
-
-                // reversing them making sure it increments as you go down...
-                while(count--)
-                    [concatIssues addObjectsFromArray:requests[count].MYData];
-
-                [aRepo setValue:concatIssues forKey:stateKey];
-                [aRepo setValue:totalAssigned forKey:"issuesAssignedToCurrentUser"];
-                [aRepo setIssuesAssignedToCurrentUser:totalAssigned];
-
-                if (aCallback)
-                    aCallback(aRepo, requests);
-
-                [[CPRunLoop currentRunLoop] performSelectors];
-            }
-        };
-
-        request.send("");
-
-        requests.push(request);
-        page++;
+            };
+            
+            request.send("");
+            
+            requests.push(request);
+            page++;
         })();
     }
 
@@ -625,6 +624,8 @@ var APIURLWithString = function(/*CPString*/aString)
 
 /*!
     Collaborators are also assignees
+
+    // FIX ME: this is wrong. Github won't actually let us do this. WTFBBQ?!?!
 */
 - (void)loadCollboratorsForRepository:(ISRepository)aRepo
 {

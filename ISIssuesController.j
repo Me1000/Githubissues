@@ -277,9 +277,9 @@
     for (var i = 0; i < count; i++)
     {
         var label = labels[i],
-            item = [[CPMenuItem alloc] initWithTitle:[label objectForKey:"name"] action:@selector(_toggleTag:) keyEquivalent:nil];
+            item = [[CPMenuItem alloc] initWithTitle:[label name] action:@selector(_toggleTag:) keyEquivalent:nil];
 
-        if ([label objectForKey:"isUsed"])
+        if ([label isUsed])
             [item setState:CPOnState];
 
         [item setTarget:self];
@@ -291,7 +291,7 @@
 }
 
 /*!
-    Returns a dictionary of labels for the selected item.
+    Returns an array of ISLabels for the selected item.
     This is specific to a single itme becuase it has an isUsed
     key for each item.
 */
@@ -301,12 +301,12 @@
         newLabels = [CPArray arrayWithDeepCopyOfArray:allLabels],
         usedLabels = [[self selectedObjects][0] objectForKey:"labels"],
         i = 0,
-        c = allLabels.length;
+        c = [newLabels count];
+
+console.log("USED LABELS!11!!!:::::", usedLabels, [self selectedObjects][0])
 
     for (; i < c; i++)   
         [newLabels[i] setObject:[usedLabels containsObject:allLabels[i]] forKey:"isUsed"];
-
-console.log(allLabels, newLabels);
 
     return newLabels;
 }

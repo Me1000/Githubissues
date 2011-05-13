@@ -76,7 +76,22 @@
     [self setIdentifier:( typeof anObject.owner === "string" ? anObject.owner : anObject.owner.login) + "/" + anObject.name];
     [self setIsPrivate:anObject["private"]];
     [self setNumberOfOpenIssues:anObject.open_issues];
-    [self setLabels:anObject['labels']];
+
+    if (anObject.labels)
+    {
+        var labels = [],
+            i = 0,
+            c = anObject.labels.length;
+
+        for (; i < c; i++)
+            labels.push([ISLabel labelWithJSObject:anObject.labels[i]]);
+
+        anObject.lables = labels;
+    }
+    else
+        anObject.labels = [];
+
+    [self setLabels:anObject.labels];
 
     // FIX ME: can we do this, but fast?
     //[self setIssuesAssignedToCurrentUser:0];
@@ -151,7 +166,7 @@
     [aCoder encodeObject:isPrivate forKey:"isPrivate"];
     [aCoder encodeObject:numberOfOpenIssues forKey:"numberOfOpenIssues"];
     [aCoder encodeObject:issuesAssignedToCurrentUser forKey:"issuesAssignedToCurrentUser"];
-    [aCoder encodeObject:labels forKey:"labels"];
+//    [aCoder encodeObject:labels forKey:"labels"];
 //    [aCoder encodeObject:open forKey:"open"];
 //    [aCoder encodeObject:closed forKey:"closed"];
 }

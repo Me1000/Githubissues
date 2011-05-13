@@ -14,6 +14,7 @@
     CPString    name @accessors;
     CPURL       url @accessors;
     CPColor     color @accessors;
+    unsigned    numberOfIssues @accessors;
 }
 
 + (CPSet)keyPathsForValuesAffectingSidebarRepresentation
@@ -30,6 +31,20 @@
     [newLabel setColor:[CPColor colorWithHexString:anObject['color']]];
 
     return newLabel;
+}
+
+- (id)init
+{
+    self = [super init];
+
+    numberOfIssues = 0;
+
+    return self;
+}
+
+- (BOOL)isUsed
+{
+    return numberOfIssues > 0;
 }
 
 /*!

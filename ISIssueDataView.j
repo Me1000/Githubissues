@@ -44,12 +44,14 @@
 
 - (void)setObjectValue:(id)aValue
 {
+//console.log(aValue);
+
     [avatarView setImage:resourcesImage("gravatar-140.png", 30, 30)];
 
-    [titleField setStringValue:"#" + [aValue objectForKey:"number"] +" " + [aValue objectForKey:"title"]];
+    [titleField setStringValue:"#" + [aValue number] + " " + [aValue title]];
     [titleField sizeToFit];
 
-    var user = [aValue objectForKey:"user"],
+    var user = [aValue user],
         name = [user valueForKey:"name"];
 
     if (!name || [name isEqual:[CPNull null]])
@@ -64,7 +66,7 @@
 
     point.x = CGRectGetMaxX([openedOnLabel frame]) + 2;
     [openedOnField setFrameOrigin:point];
-    [openedOnField setStringValue:[aValue objectForKey:"created_at"]];
+    [openedOnField setStringValue:[[aValue createdAt] friendlyDateString]];
     [openedOnField sizeToFit];
 
     point.x = CGRectGetMaxX([openedOnField frame]) + 2;
@@ -72,10 +74,10 @@
 
     point.x = CGRectGetMaxX([updatedLabel frame]) + 2;
     [updatedField setFrameOrigin:point];
-    [updatedField setStringValue:[aValue objectForKey:"updated_at"]];
+    [updatedField setStringValue:[[aValue updatedAt] friendlyDateString]];
     [updatedField sizeToFit];
 
-    [commentsField setStringValue:[aValue objectForKey:"comments"] + " comments"];
+    [commentsField setStringValue:[aValue numberOfComments] + " comments"];
 
     // FIX ME: what we could do is preload all the images by having the browser loop through all the issues, taking the submit
     // user image and just creating a new image object. Memory considerations should be ... herp ... considered though.

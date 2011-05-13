@@ -25,6 +25,8 @@
 @import "ISNewIssueWindowController.j"
 @import "ISNewLabelWindowController.j"
 @import "ISLabel.j"
+@import "ISIssue.j"
+@import "CPDate+extentions.j"
 
 @implementation AppController : CPObject
 {
@@ -140,6 +142,7 @@
 }
 @end
 
+#pragma mark hello world
 
 /*!
     FIX ME:
