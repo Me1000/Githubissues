@@ -24,6 +24,7 @@ var ISSourceLockImage       = nil,
 @implementation ISSourceListDataView : CPView
 {
     @outlet CPImageView imageview;
+    ISLabelIcon         labelIconView;
     @outlet CPTextField textfield;
     ISAssignedBadgeView assignedBadgeView;
     ISOpenBadgeView     openBadgeView;
@@ -34,7 +35,7 @@ var ISSourceLockImage       = nil,
     CPImage     image;
     CPImage     selectedImage;
 
-    CPFont   cachedFont;
+    CPFont      cachedFont;
 }
 
 - (id)initWithFrame:(CGRect)aRect
@@ -46,6 +47,9 @@ var ISSourceLockImage       = nil,
     imageview = [[CPImageView alloc] initWithFrame:CGRectMake(5, 9, 15, 15)];
     [imageview setImageScaling:CPScaleNone];
     [self addSubview:imageview];
+
+    labelIconView = [[ISLabelIcon alloc] initWithFrame:CGRectMake(7, 12, 11, 11)];
+    [self addSubview:labelIconView];
 
     textfield = [[CPTextField alloc] initWithFrame:CGRectMake(18, 9, 90, 15)];
     [textfield setFont:[CPFont boldSystemFontOfSize:11]];
@@ -77,7 +81,7 @@ var ISSourceLockImage       = nil,
 
     [super layoutSubviews];
 
-    if (image)
+    if (image || [labelIconView color])
         var origin = CGPointMake(18, 9);
     else
         var origin = CGPointMake(5, 9);
@@ -105,8 +109,8 @@ var ISSourceLockImage       = nil,
 
 - (void)setObjectValue:(id)aValue
 {
-
-    var image = nil;
+    var image = nil,
+        labelColor = nil;
     if ([aValue isKindOfClass:ISRepository])
     {
         text = [aValue identifier];
@@ -129,7 +133,7 @@ var ISSourceLockImage       = nil,
         text = [aValue name];
         number = nil;
         specialNumber = nil;
-        // TODO Draw colour coded label image.
+        labelColor = [aValue color];
     }
     else if (aValue)
     {
@@ -140,6 +144,7 @@ var ISSourceLockImage       = nil,
 
     [textfield setStringValue:text];
     [imageview setImage:image];
+    [labelIconView setColor:labelColor];
     [assignedBadgeView setStringValue:specialNumber];
     [assignedBadgeView setHidden:!specialNumber];
     [openBadgeView setStringValue:number];
@@ -170,6 +175,7 @@ var ISSourceLockImage       = nil,
     self = [super initWithCoder:aCoder];
 
     imageview = [aCoder decodeObjectForKey:"imageview"];
+    labelIconView = [aCoder decodeObjectForKey:"labelIconView"];
     textfield = [aCoder decodeObjectForKey:"textfield"];
     assignedBadgeView = [aCoder decodeObjectForKey:"assignedBadgeView"];
     openBadgeView = [aCoder decodeObjectForKey:"openBadgeView"];
@@ -180,6 +186,7 @@ var ISSourceLockImage       = nil,
 {
     [super encodeWithCoder:aCoder];
     [aCoder encodeObject:imageview forKey:"imageview"];
+    [aCoder encodeObject:labelIconView forKey:"labelIconView"];
     [aCoder encodeObject:textfield forKey:"textfield"];
     [aCoder encodeObject:assignedBadgeView forKey:"assignedBadgeView"];
     [aCoder encodeObject:openBadgeView forKey:"openBadgeView"];
@@ -323,6 +330,66 @@ var ISAssignedBadgeViewBackgroundColor = nil,
         [self hasThemeState:CPThemeStateSelectedDataView] ?
             isClosed ? ISOpenBadgeActiveViewClosedBackgroundColor : ISOpenBadgeActiveViewBackgroundColor :
             isClosed ? ISOpenBadgeViewClosedBackgroundColor : ISOpenBadgeViewBackgroundColor];
+}
+
+@end
+
+@implementation ISLabelIcon : CPView
+{
+    CPColor color @accessors;
+}
+
+- (void)setColor:(CPColor)aColor
+{
+    if (color == aColor)
+        return;
+    color = aColor;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)drawRect:(CGRect)aRect
+{
+    [super drawRect:aRect];
+
+    if (!color)
+        return;
+
+    var context = [[CPGraphicsContext currentContext] graphicsPort],
+        bounds = [self bounds];
+
+    CGContextSetFillColor(context, color);
+    CGContextBeginPath(context);
+
+    /*
+    M 10.07,0 H 6.568 L 0,6.488 L 4.543,11 L 11,4.588 V 0.924 L 10.07,0 z
+    M 9.814,2.493
+    C 9.449,2.856 8.855,2.856 8.488,2.493
+    C 8.122,2.129 8.122,1.54 8.488,1.176
+    C 8.854,0.812 9.449,0.812 9.814,1.176
+    C 10.182,1.54 10.182,2.129 9.814,2.493 z
+    */
+
+    // Coordinates below are all based on an 11x11 size label.
+    CGContextScaleCTM(context, bounds.size.width / 11.0, bounds.size.height / 11.0);
+
+    CGContextMoveToPoint(context,       10.07,  0);
+    CGContextAddLineToPoint(context,    6.568,  0);
+    CGContextAddLineToPoint(context,    0,      6.488);
+    CGContextAddLineToPoint(context,    4.543,  11);
+    CGContextAddLineToPoint(context,    11,     4.588);
+    CGContextAddLineToPoint(context,    11,     0.924);
+    CGContextAddLineToPoint(context,    10.07,  0);
+    CGContextClosePath(context);
+
+    CGContextMoveToPoint(context,       9.814,  2.493);
+    CGContextAddCurveToPoint(context,   9.449,  2.856,  8.855,  2.856,  8.488,  2.493);
+    CGContextAddCurveToPoint(context,   8.122,  2.129,  8.122,  1.54,   8.488,  1.176);
+    CGContextAddCurveToPoint(context,   8.854,  0.812,  9.449,  0.812,  9.814,  1.176);
+    CGContextAddCurveToPoint(context,   10.182, 1.54,   10.182, 2.129,  9.814,  2.493);
+    CGContextClosePath(context);
+
+
+    CGContextFillPath(context);
 }
 
 @end
