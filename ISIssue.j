@@ -14,6 +14,7 @@
     CPString     title @accessors;
     unsigned     number @accessors;
     CPDictionary user @accessors;
+    CPArray      labels @accessors;
 }
 
 + (id)issuesWithJSObject:(JSObject)anObject
@@ -34,6 +35,10 @@
     newIssues.title       = anObject.title || "";
     newIssues.number      = anObject.number || CPNotFound; // maybe nil?
     newIssues.user        = [CPDictionary dictionaryWithJSObject:anObject.user recursively:YES];
+    newIssues.labels      = [];
+
+    for (var i = 0, c = anObject.labels.length; i < c; i++)
+        newIssues.labels.push([ISLabel labelWithJSObject:anObject.labels[i]]);
 
     return newIssues;
 }

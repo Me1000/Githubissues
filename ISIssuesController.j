@@ -284,6 +284,7 @@
 
         [item setTarget:self];
         [item setTag:label];
+
         [menu addItem:item];
     }
 
@@ -299,14 +300,18 @@
 {
     var allLabels = [activeRepository labels],
         newLabels = [CPArray arrayWithDeepCopyOfArray:allLabels],
-        usedLabels = [[self selectedObjects][0] objectForKey:"labels"],
+        usedLabels = [[self selectedObjects][0] labels],
         i = 0,
         c = [newLabels count];
 
-console.log("USED LABELS!11!!!:::::", usedLabels, [self selectedObjects][0])
 
-    for (; i < c; i++)   
-        [newLabels[i] setObject:[usedLabels containsObject:allLabels[i]] forKey:"isUsed"];
+    for (; i < c; i++)
+    {
+        if ([usedLabels containsObject:allLabels[i]])
+            [newLabels[i] setNumberOfIssues:1];
+        else
+            [newLabels[i] setNumberOfIssues:0]; // because a deep copy also copies the number, and since we're only interested in a single issue we don't need it.
+    }
 
     return newLabels;
 }
