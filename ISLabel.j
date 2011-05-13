@@ -11,6 +11,7 @@
 */
 @implementation ISLabel : CPObject
 {
+    unsigned    labelID @accessors;
     CPString    name @accessors;
     CPURL       url @accessors;
     CPColor     color @accessors;
@@ -29,6 +30,8 @@
     [newLabel setName:anObject['name']];
     [newLabel setUrl:[CPURL URLWithString:anObject['url']]];
     [newLabel setColor:[CPColor colorWithHexString:anObject['color']]];
+
+    [newLabel setLabelID:[[[newLabel url] pathComponents] lastObject]];
 
     return newLabel;
 }
