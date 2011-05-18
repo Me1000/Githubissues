@@ -233,7 +233,7 @@ var APIURLWithString = function(/*CPString*/aString)
 {
     var request = new CFHTTPRequest();
 
-    //github.com/users/technoweenie.json
+    //github.com/users/technoweenie
     // Use V3 of the Github API
     // request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
@@ -242,7 +242,7 @@ var APIURLWithString = function(/*CPString*/aString)
         request.setRequestHeader("Authorization", "Basic "+CFData.encodeBase64String(username +":" + password));
 
     // FIX ME: this URL is wrong.
-    request.open("GET", [self _urlForAPICall:"user.json"], true);
+    request.open("GET", [self _urlForAPICall:"user"], true);
 
     request.oncomplete = function()
     {
@@ -368,7 +368,7 @@ var APIURLWithString = function(/*CPString*/aString)
     if ([parts count] > 2)
         anIdentifier = parts.slice(0, 2).join("/");
 
-    request.open("GET", [self _urlForAPICall:"repos/"+anIdentifier+".json"], true);
+    request.open("GET", [self _urlForAPICall:"repos/"+anIdentifier+""], true);
 
     request.oncomplete = function()
     {
@@ -421,12 +421,12 @@ var APIURLWithString = function(/*CPString*/aString)
 
 - (void)loadLabelsForRepository:(ISRepository)aRepo
 {
-    ///repos/:user/:repo/labels.json
+    ///repos/:user/:repo/labels
 
     var request = new CFHTTPRequest();
     // request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
-    request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/labels.json"], true);
+    request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/labels"], true);
 
     request.oncomplete = function()
     {
@@ -497,7 +497,7 @@ var APIURLWithString = function(/*CPString*/aString)
 - (void)loadIssuesForRepository:(ISRepository)aRepo state:(CPString)stateKey callback:(id)aCallback
 {
     /*
-        GET /repos/:user/:repo/issues.json
+        GET /repos/:user/:repo/issues
         ?milestone = (Fixnum)
         ?sort = (String)
         ?direction = (String)
@@ -521,7 +521,7 @@ var APIURLWithString = function(/*CPString*/aString)
 
 //            //request.setRequestHeader("accept", "application/vnd.github.v3+json");
 
-            request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?per_page=100&page="+page+"&state="+stateKey], true);
+            request.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues?per_page=100&page="+page+"&state="+stateKey], true);
 
             request.oncomplete = function()
             {
@@ -593,7 +593,7 @@ var APIURLWithString = function(/*CPString*/aString)
     var secRequest = new CFHTTPRequest();
 
     secRequest.setRequestHeader("accept", "application/vnd.github.v3+json");
-    secRequest.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues.json?state="+secStateKey], true);
+    secRequest.open("GET", [self _urlForAPICall:"repos/"+[aRepo identifier]+"/issues?state="+secStateKey], true);
 
     secRequest.oncomplete = function()
     {
@@ -650,7 +650,7 @@ var APIURLWithString = function(/*CPString*/aString)
 - (void)createIssue:(CPDictionary)anIssue withCallback:(id)aCallback
 {
     /*POST https://Me1000:icu81234@api.github.com/repos/:user/:repo/issues
-           https://Me1000:icu81234@api.github.com/repos/Me1000/Githubissues/issues.json?app_id=280issues
+           https://Me1000:icu81234@api.github.com/repos/Me1000/Githubissues/issues?app_id=280issues
     INPUT
 
     {"title"=>"String",
